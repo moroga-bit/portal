@@ -3,11 +3,12 @@ class OrderManagementSystem {
     constructor() {
         this.orders = this.loadOrders();
         this.filteredOrders = [...this.orders];
-        this.currentMonth = new Date();
-        this.selectedMonth = new Date();
+        this.currentMonth = new Date(2025, 8); // 2025年9月（月は0ベースなので8）
+        this.selectedMonth = new Date(2025, 8); // 2025年9月を設定
         this.initializeEventListeners();
         this.updateStats();
         this.updateMonthDisplay();
+        this.updateMonthStats(); // 月統計を更新
         this.renderOrders();
     }
 
@@ -262,7 +263,7 @@ class OrderManagementSystem {
         const totalOrders = this.orders.length;
         const totalAmount = this.orders.reduce((sum, order) => sum + this.calculateTotal(order.items), 0);
         
-        const now = new Date();
+        const now = new Date(2025, 8); // 2025年9月
         const thisMonthOrders = this.orders.filter(order => {
             const orderDate = new Date(order.orderDate);
             return orderDate.getMonth() === now.getMonth() && 
