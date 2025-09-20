@@ -16,10 +16,25 @@ class OrderManagementSystem {
     loadOrders() {
         try {
             const saved = localStorage.getItem('purchaseOrders');
-            const orders = saved ? JSON.parse(saved) : [];
             console.log('=== loadOrders ===');
+            console.log('LocalStorageの生データ:', saved);
+            
+            const orders = saved ? JSON.parse(saved) : [];
             console.log('LocalStorageから読み込んだ発注書数:', orders.length);
             console.log('発注書データ:', orders);
+            
+            // 各発注書の詳細を表示
+            orders.forEach((order, index) => {
+                console.log(`発注書 ${index + 1}:`, {
+                    id: order.id,
+                    orderDate: order.orderDate,
+                    companyName: order.companyName,
+                    supplierName: order.supplierName,
+                    total: order.total,
+                    itemsCount: order.items ? order.items.length : 0
+                });
+            });
+            
             return orders;
         } catch (error) {
             console.error('発注書データの読み込みエラー:', error);

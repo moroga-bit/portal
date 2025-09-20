@@ -531,7 +531,12 @@ class OrderFormManager {
             </div>
             <div class="form-group">
                 <label>単位</label>
-                <input type="text" name="itemUnit[]" placeholder="個、台、kg等">
+                <select name="itemUnit[]">
+                    <option value="">単位を選択</option>
+                    <option value="㎡">㎡</option>
+                    <option value="m">m</option>
+                    <option value="式">式</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>単価（円）</label>
@@ -1521,6 +1526,10 @@ class OrderFormManager {
             
             console.log('発注書保存完了 - ID:', orderId);
             console.log('保存後の発注書数:', existingOrders.length);
+            
+            // 保存後のデータを確認
+            const savedData = JSON.parse(localStorage.getItem('purchaseOrders') || '[]');
+            console.log('保存後の全データ:', savedData);
             
             return orderId;
             
