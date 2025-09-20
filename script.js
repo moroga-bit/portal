@@ -85,19 +85,14 @@ class OrderFormManager {
             console.error('generatePdfFromPreviewBtn が見つかりません');
         }
 
-        // 発注書管理登録ボタン
-        const registerToManagementBtn = document.getElementById('registerToManagementBtn');
-        console.log('発注書管理登録ボタン要素:', registerToManagementBtn);
-        if (registerToManagementBtn) {
-            registerToManagementBtn.addEventListener('click', (e) => {
+        // プレビューエリア内のボタンは動的に生成されるため、イベント委譲を使用
+        document.addEventListener('click', (e) => {
+            if (e.target && e.target.id === 'registerToManagementBtn') {
                 e.preventDefault();
                 console.log('発注書管理登録ボタンがクリックされました');
                 this.registerToManagement();
-            });
-            console.log('発注書管理登録ボタンのイベントリスナーを設定しました');
-        } else {
-            console.error('registerToManagementBtn が見つかりません');
-        }
+            }
+        });
 
 
 
@@ -1387,9 +1382,7 @@ class OrderFormManager {
                 
                 // 発注書管理ページに移動するか確認
                 setTimeout(() => {
-                    if (confirm('発注書管理ページを開いて確認しますか？')) {
-                        window.open('management.html', '_blank');
-                    }
+                    this.showManagementPageModal();
                 }, 1000);
             } else {
                 console.error('発注書登録失敗 - orderIdがnull');
@@ -1494,6 +1487,89 @@ class OrderFormManager {
                 messageDiv.parentNode.removeChild(messageDiv);
             }
         }, 5000);
+    }
+
+    // 管理ページモーダル表示
+    showManagementPageModal() {
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'management-modal';
+        modalDiv.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10001;
+            ">
+                <div style="
+                    background: white;
+                    padding: 30px;
+                    border-radius: 15px;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                    text-align: center;
+                    max-width: 400px;
+                    width: 90%;
+                ">
+                    <h3 style="margin: 0 0 20px 0; color: #2c3e50; font-size: 1.5rem;">
+                        ✅ 発注書を登録しました！
+                    </h3>
+                    <p style="margin: 0 0 25px 0; color: #666; font-size: 1.1rem;">
+                        発注書管理ページで確認しますか？
+                    </p>
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button id="openManagementBtn" style="
+                            background: linear-gradient(135deg, #667eea, #764ba2);
+                            color: white;
+                            border: none;
+                            padding: 12px 25px;
+                            border-radius: 25px;
+                            font-size: 16px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        ">📋 管理ページを開く</button>
+                        <button id="closeModalBtn" style="
+                            background: #6c757d;
+                            color: white;
+                            border: none;
+                            padding: 12px 25px;
+                            border-radius: 25px;
+                            font-size: 16px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        ">閉じる</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modalDiv);
+        
+        // ボタンのイベントリスナーを設定
+        const openBtn = modalDiv.querySelector('#openManagementBtn');
+        const closeBtn = modalDiv.querySelector('#closeModalBtn');
+        
+        openBtn.addEventListener('click', () => {
+            window.open('management.html', '_blank');
+            document.body.removeChild(modalDiv);
+        });
+        
+        closeBtn.addEventListener('click', () => {
+            document.body.removeChild(modalDiv);
+        });
+        
+        // 背景クリックで閉じる
+        modalDiv.addEventListener('click', (e) => {
+            if (e.target === modalDiv.querySelector('div')) {
+                document.body.removeChild(modalDiv);
+            }
+        });
     }
 }
 
