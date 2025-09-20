@@ -111,6 +111,18 @@ class OrderFormManager {
         } else {
             console.error('resetBtn が見つかりません');
         }
+
+        // 保存して管理に登録ボタン
+        const saveAndRegisterBtn = document.getElementById('saveAndRegisterBtn');
+        if (saveAndRegisterBtn) {
+            saveAndRegisterBtn.addEventListener('click', () => {
+                console.log('保存して管理に登録ボタンがクリックされました');
+                this.registerToManagement();
+            });
+            console.log('保存して管理に登録ボタンのイベントリスナーを設定しました');
+        } else {
+            console.warn('saveAndRegisterBtn が見つかりません');
+        }
         
         console.log('イベントリスナー初期化完了');
     }
@@ -1351,6 +1363,12 @@ class OrderFormManager {
         console.log('=== 発注書管理登録開始 ===');
         
         try {
+            // フォームのバリデーション
+            if (!this.validateForm()) {
+                alert('必須項目を入力してください。');
+                return;
+            }
+
             const formData = this.getFormData();
             console.log('フォームデータ取得:', formData);
             
@@ -1360,20 +1378,125 @@ class OrderFormManager {
             
             if (orderId) {
                 console.log('発注書登録成功');
-                alert('発注書を管理システムに登録しました！\n\n発注書管理ページで確認できます。');
+                
+                // 成功メッセージを表示
+                this.showSuccessMessage('発注書を管理システムに登録しました！');
+                
+                // プレビューを閉じる
+                this.hidePreview();
+                
+                // フォームをリセット
+                this.resetForm();
                 
                 // 発注書管理ページに移動するか確認
-                if (confirm('発注書管理ページを開きますか？')) {
-                    window.open('management.html', '_blank');
-                }
+                setTimeout(() => {
+                    if (confirm('発注書管理ページを開いて確認しますか？')) {
+                        window.open('management.html', '_blank');
+                    }
+                }, 1000);
             } else {
                 console.error('発注書登録失敗 - orderIdがnull');
-                alert('発注書の登録に失敗しました。\nもう一度お試しください。');
+                this.showErrorMessage('発注書の登録に失敗しました。\nもう一度お試しください。');
             }
         } catch (error) {
             console.error('発注書登録エラー:', error);
-            alert('発注書の登録中にエラーが発生しました。\n' + error.message);
+            this.showErrorMessage('発注書の登録中にエラーが発生しました。\n' + error.message);
         }
+    }
+
+    // フォームバリデーション
+    validateForm() {
+        const requiredFields = [
+            'companyName', 'companyAddress', 'companyPhone', 'companyEmail',
+            'orderDate', 'staffMember', 'supplierName', 'supplierAddress'
+        ];
+        
+        for (const fieldName of requiredFields) {
+            const field = document.getElementById(fieldName);
+            if (field && !field.value.trim()) {
+                field.focus();
+                return false;
+            }
+        }
+        
+        // 商品情報のチェック
+        const itemNames = document.querySelectorAll('input[name="itemName[]"]');
+        const itemQuantities = document.querySelectorAll('input[name="itemQuantity[]"]');
+        const itemPrices = document.querySelectorAll('input[name="itemPrice[]"]');
+        
+        for (let i = 0; i < itemNames.length; i++) {
+            if (itemNames[i].value.trim() && 
+                (!itemQuantities[i].value || !itemPrices[i].value)) {
+                itemQuantities[i].focus();
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    // 成功メッセージ表示
+    showSuccessMessage(message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'success-message';
+        messageDiv.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+                z-index: 10000;
+                font-weight: 600;
+                animation: slideInRight 0.3s ease;
+            ">
+                ✅ ${message}
+            </div>
+        `;
+        
+        document.body.appendChild(messageDiv);
+        
+        // 3秒後に自動削除
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.parentNode.removeChild(messageDiv);
+            }
+        }, 3000);
+    }
+
+    // エラーメッセージ表示
+    showErrorMessage(message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'error-message';
+        messageDiv.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #dc3545, #c82333);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+                z-index: 10000;
+                font-weight: 600;
+                animation: slideInRight 0.3s ease;
+            ">
+                ❌ ${message}
+            </div>
+        `;
+        
+        document.body.appendChild(messageDiv);
+        
+        // 5秒後に自動削除
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.parentNode.removeChild(messageDiv);
+            }
+        }, 5000);
     }
 }
 
