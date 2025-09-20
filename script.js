@@ -519,15 +519,15 @@ class OrderFormManager {
         newRow.innerHTML = `
             <div class="form-group">
                 <label>発注工事件名</label>
-                <input type="text" name="itemProjectName[]" required>
+                <input type="text" name="itemProjectName[]">
             </div>
             <div class="form-group">
                 <label>商品名</label>
-                <input type="text" name="itemName[]" required>
+                <input type="text" name="itemName[]">
             </div>
             <div class="form-group">
                 <label>数量</label>
-                <input type="number" name="itemQuantity[]" min="1" required>
+                <input type="number" name="itemQuantity[]" min="1">
             </div>
             <div class="form-group">
                 <label>単位</label>
@@ -535,7 +535,7 @@ class OrderFormManager {
             </div>
             <div class="form-group">
                 <label>単価（円）</label>
-                <input type="number" name="itemPrice[]" min="0" step="0.01" required>
+                <input type="number" name="itemPrice[]" min="0" step="0.01">
             </div>
             <div class="form-group">
                 <label>小計（円）</label>
@@ -1399,36 +1399,6 @@ class OrderFormManager {
         }
     }
 
-    // フォームバリデーション
-    validateForm() {
-        const requiredFields = [
-            'companyName', 'companyAddress', 'companyPhone', 'companyEmail',
-            'orderDate', 'staffMember', 'supplierName', 'supplierAddress'
-        ];
-        
-        for (const fieldName of requiredFields) {
-            const field = document.getElementById(fieldName);
-            if (field && !field.value.trim()) {
-                field.focus();
-                return false;
-            }
-        }
-        
-        // 商品情報のチェック
-        const itemNames = document.querySelectorAll('input[name="itemName[]"]');
-        const itemQuantities = document.querySelectorAll('input[name="itemQuantity[]"]');
-        const itemPrices = document.querySelectorAll('input[name="itemPrice[]"]');
-        
-        for (let i = 0; i < itemNames.length; i++) {
-            if (itemNames[i].value.trim() && 
-                (!itemQuantities[i].value || !itemPrices[i].value)) {
-                itemQuantities[i].focus();
-                return false;
-            }
-        }
-        
-        return true;
-    }
 
     // 成功メッセージ表示
     showSuccessMessage(message) {
