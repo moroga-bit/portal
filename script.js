@@ -110,7 +110,8 @@ class OrderFormManager {
         // 保存して管理に登録ボタン
         const saveAndRegisterBtn = document.getElementById('saveAndRegisterBtn');
         if (saveAndRegisterBtn) {
-            saveAndRegisterBtn.addEventListener('click', () => {
+            saveAndRegisterBtn.addEventListener('click', (e) => {
+                e.preventDefault(); // フォームのデフォルト動作を防ぐ
                 console.log('保存して管理に登録ボタンがクリックされました');
                 this.registerToManagement();
             });
@@ -119,6 +120,16 @@ class OrderFormManager {
             console.warn('saveAndRegisterBtn が見つかりません');
         }
         
+        // フォームのリセットイベントを防ぐ
+        const orderForm = document.getElementById('orderForm');
+        if (orderForm) {
+            orderForm.addEventListener('reset', (e) => {
+                console.log('フォームリセットイベントが発生しました');
+                // リセットイベントを防ぐ（確認ダイアログを表示しない）
+                e.preventDefault();
+            });
+        }
+
         console.log('イベントリスナー初期化完了');
     }
 
