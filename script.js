@@ -4,6 +4,7 @@ class OrderFormManager {
     constructor() {
         this.initializeEventListeners();
         this.setDefaultDate();
+        this.setupExistingItemRows();
         this.calculateTotals();
         this.checkForEditMode();
     }
@@ -91,7 +92,7 @@ class OrderFormManager {
                 e.preventDefault();
                 console.log('発注書管理登録ボタンがクリックされました');
                 this.registerToManagement();
-            }
+        }
         });
 
 
@@ -129,7 +130,7 @@ class OrderFormManager {
                 e.preventDefault();
             });
         }
-
+        
         console.log('イベントリスナー初期化完了');
     }
 
@@ -518,7 +519,7 @@ class OrderFormManager {
         newRow.className = 'item-row';
         newRow.innerHTML = `
             <div class="form-group">
-                <label>発注工事件名</label>
+                <label>工事名</label>
                 <input type="text" name="itemProjectName[]">
             </div>
             <div class="form-group">
@@ -531,12 +532,7 @@ class OrderFormManager {
             </div>
             <div class="form-group">
                 <label>単位</label>
-                <select name="itemUnit[]">
-                    <option value="">単位を選択</option>
-                    <option value="㎡">㎡</option>
-                    <option value="m">m</option>
-                    <option value="式">式</option>
-                </select>
+                <input type="text" name="itemUnit[]" placeholder="単位を入力">
             </div>
             <div class="form-group">
                 <label>単価（円）</label>
@@ -551,6 +547,35 @@ class OrderFormManager {
             </div>
         `;
         container.appendChild(newRow);
+        
+        // 新しく追加された行の計算機能を設定
+        this.setupItemRowCalculation(newRow);
+    }
+    
+    // 既存の商品行に計算機能を設定
+    setupExistingItemRows() {
+        const itemRows = document.querySelectorAll('.item-row');
+        itemRows.forEach(row => {
+            this.setupItemRowCalculation(row);
+        });
+    }
+    
+    // 商品行の計算機能を設定
+    setupItemRowCalculation(row) {
+        const quantityInput = row.querySelector('input[name="itemQuantity[]"]');
+        const priceInput = row.querySelector('input[name="itemPrice[]"]');
+        
+        if (quantityInput && priceInput) {
+            quantityInput.addEventListener('input', () => {
+                this.calculateItemSubtotal(quantityInput);
+                this.calculateTotals();
+            });
+            
+            priceInput.addEventListener('input', () => {
+                this.calculateItemSubtotal(priceInput);
+                this.calculateTotals();
+            });
+        }
     }
 
     removeItemRow(button) {
@@ -573,6 +598,7 @@ class OrderFormManager {
         const price = parseFloat(row.querySelector('input[name="itemPrice[]"]').value) || 0;
         const subtotal = quantity * price;
         
+        console.log('小計計算:', { quantity, price, subtotal });
         row.querySelector('input[name="itemSubtotal[]"]').value = subtotal.toFixed(2);
     }
 
@@ -587,9 +613,15 @@ class OrderFormManager {
         const tax = Math.ceil(subtotal * 0.1); // 10%の消費税（小数点切り上げ）
         const total = subtotal + tax;
         
-        document.getElementById('subtotal').textContent = `¥${subtotal.toLocaleString()}`;
-        document.getElementById('tax').textContent = `¥${tax.toLocaleString()}`;
-        document.getElementById('total').textContent = `¥${total.toLocaleString()}`;
+        console.log('合計計算:', { subtotal, tax, total });
+        
+        const subtotalElement = document.getElementById('subtotal');
+        const taxElement = document.getElementById('tax');
+        const totalElement = document.getElementById('total');
+        
+        if (subtotalElement) subtotalElement.textContent = `¥${subtotal.toLocaleString()}`;
+        if (taxElement) taxElement.textContent = `¥${tax.toLocaleString()}`;
+        if (totalElement) totalElement.textContent = `¥${total.toLocaleString()}`;
     }
 
     showPreview() {
@@ -784,7 +816,7 @@ class OrderFormManager {
                 <table class="items-table">
                     <thead>
                         <tr>
-                                <th>工事件名</th>
+                                <th>工事名</th>
                             <th>商品名</th>
                             <th>数量</th>
                             <th>単価</th>
@@ -1346,7 +1378,7 @@ class OrderFormManager {
             container.innerHTML = `
                 <div class="item-row">
                     <div class="form-group">
-                        <label>発注工事件名</label>
+                        <label>工事名</label>
                         <input type="text" name="itemProjectName[]" required>
                     </div>
                     <div class="form-group">

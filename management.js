@@ -457,7 +457,7 @@ class OrderManagementSystem {
                 <table class="items-table">
                     <thead>
                         <tr>
-                            <th>工事件名</th>
+                            <th>工事名</th>
                             <th>商品名</th>
                             <th>数量</th>
                             <th>単価</th>
