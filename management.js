@@ -103,9 +103,9 @@ class OrderManagementSystem {
         this.filteredOrders = this.orders.filter(order => {
             // 検索条件
             const matchesSearch = !searchTerm || 
-                order.supplierName.toLowerCase().includes(searchTerm) ||
-                order.orderNumber.toLowerCase().includes(searchTerm) ||
-                order.companyName.toLowerCase().includes(searchTerm);
+                (order.supplierName && order.supplierName.toLowerCase().includes(searchTerm)) ||
+                (order.id && order.id.toLowerCase().includes(searchTerm)) ||
+                (order.companyName && order.companyName.toLowerCase().includes(searchTerm));
 
             // フィルタ条件
             let matchesFilter = true;
@@ -178,32 +178,32 @@ class OrderManagementSystem {
 
     // 発注書カードを作成
     createOrderCard(order) {
-        const totalAmount = this.calculateTotal(order.items);
+        const totalAmount = order.total || 0;
         const orderDate = new Date(order.orderDate).toLocaleDateString('ja-JP');
         
         return `
             <div class="order-card" data-order-id="${order.id}">
                 <div class="order-card-header">
-                    <div class="order-number">${order.orderNumber}</div>
+                    <div class="order-number">${order.id}</div>
                     <div class="order-date">${orderDate}</div>
                 </div>
                 
                 <div class="order-info">
                     <div class="info-row">
                         <span class="info-label">発注先:</span>
-                        <span class="info-value">${order.supplierName}</span>
+                        <span class="info-value">${order.supplierName || '未設定'}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">担当:</span>
                         <span class="info-value">${order.staffMember || '未設定'}</span>
                     </div>
                     <div class="info-row">
-                        <span class="info-label">工事完了月:</span>
-                        <span class="info-value">${order.completionMonth || '未設定'}</span>
+                        <span class="info-label">会社名:</span>
+                        <span class="info-value">${order.companyName || '未設定'}</span>
                     </div>
                     <div class="info-row">
-                        <span class="info-label">支払条件:</span>
-                        <span class="info-value">${order.paymentTerms}</span>
+                        <span class="info-label">商品数:</span>
+                        <span class="info-value">${order.items ? order.items.length : 0}件</span>
                     </div>
                 </div>
 
@@ -412,7 +412,7 @@ class OrderManagementSystem {
         return `
             <div class="header">
                 <h1>発注書詳細</h1>
-                <h2>${order.orderNumber}</h2>
+                <h2>${order.id}</h2>
                 <p>発注日: ${new Date(order.orderDate).toLocaleDateString('ja-JP')}</p>
             </div>
 
@@ -434,9 +434,7 @@ class OrderManagementSystem {
 
             <div class="info-section">
                 <h3>その他情報</h3>
-                <div class="info-row"><span class="info-label">工事完了月:</span><span class="info-value">${order.completionMonth || '未設定'}</span></div>
-                <div class="info-row"><span class="info-label">支払条件:</span><span class="info-value">${order.paymentTerms}</span></div>
-                ${order.remarks ? `<div class="info-row"><span class="info-label">備考:</span><span class="info-value">${order.remarks}</span></div>` : ''}
+                <div class="info-row"><span class="info-label">備考:</span><span class="info-value">${order.remarks || 'なし'}</span></div>
             </div>
 
             <div class="info-section">
@@ -563,6 +561,19 @@ class OrderManagementSystem {
             console.error('エクスポートエラー:', error);
             alert('データのエクスポートに失敗しました。');
         }
+    }
+
+    // 商品配列から合計金額を計算
+    calculateTotal(items) {
+        if (!items || !Array.isArray(items)) {
+            return 0;
+        }
+        
+        return items.reduce((total, item) => {
+            const quantity = parseFloat(item.quantity) || 0;
+            const unitPrice = parseFloat(item.unitPrice) || 0;
+            return total + (quantity * unitPrice);
+        }, 0);
     }
 
     // 全発注書を削除

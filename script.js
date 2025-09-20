@@ -1464,6 +1464,117 @@ class OrderFormManager {
         }, 5000);
     }
 
+    // 発注書データをLocalStorageに保存
+    saveOrderToStorage(formData) {
+        try {
+            console.log('=== saveOrderToStorage ===');
+            console.log('保存するフォームデータ:', formData);
+            
+            // 既存の発注書データを取得
+            const existingOrders = JSON.parse(localStorage.getItem('purchaseOrders') || '[]');
+            console.log('既存の発注書数:', existingOrders.length);
+            
+            // 新しい発注書IDを生成
+            const orderId = 'order_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            // 発注書データを構築
+            const orderData = {
+                id: orderId,
+                orderDate: formData.orderDate || new Date().toISOString().split('T')[0],
+                companyName: formData.companyName || '',
+                companyAddress: formData.companyAddress || '',
+                companyPhone: formData.companyPhone || '',
+                companyEmail: formData.companyEmail || '',
+                staffMember: formData.staffMember || '',
+                supplierName: formData.supplierName || '',
+                supplierAddress: formData.supplierAddress || '',
+                contactPerson: formData.contactPerson || '',
+                items: this.buildItemsArray(formData),
+                subtotal: this.calculateSubtotal(formData),
+                tax: this.calculateTax(formData),
+                total: this.calculateTotal(formData),
+                remarks: formData.remarks || '',
+                createdAt: new Date().toISOString()
+            };
+            
+            console.log('構築された発注書データ:', orderData);
+            
+            // 発注書を追加
+            existingOrders.push(orderData);
+            
+            // LocalStorageに保存
+            localStorage.setItem('purchaseOrders', JSON.stringify(existingOrders));
+            
+            console.log('発注書保存完了 - ID:', orderId);
+            console.log('保存後の発注書数:', existingOrders.length);
+            
+            return orderId;
+            
+        } catch (error) {
+            console.error('発注書保存エラー:', error);
+            return null;
+        }
+    }
+    
+    // 商品配列を構築
+    buildItemsArray(formData) {
+        const items = [];
+        const projectNames = formData['itemProjectName[]'] || [];
+        const itemNames = formData['itemName[]'] || [];
+        const quantities = formData['itemQuantity[]'] || [];
+        const units = formData['itemUnit[]'] || [];
+        const prices = formData['itemPrice[]'] || [];
+        
+        const maxLength = Math.max(
+            projectNames.length,
+            itemNames.length,
+            quantities.length,
+            units.length,
+            prices.length
+        );
+        
+        for (let i = 0; i < maxLength; i++) {
+            const projectName = projectNames[i] || '';
+            const itemName = itemNames[i] || '';
+            const quantity = parseFloat(quantities[i]) || 0;
+            const unit = units[i] || '';
+            const price = parseFloat(prices[i]) || 0;
+            
+            // 空の行はスキップ
+            if (itemName.trim() || quantity > 0 || price > 0) {
+                items.push({
+                    projectName: projectName,
+                    name: itemName,
+                    quantity: quantity,
+                    unit: unit,
+                    unitPrice: price,
+                    subtotal: quantity * price
+                });
+            }
+        }
+        
+        return items;
+    }
+    
+    // 小計を計算
+    calculateSubtotal(formData) {
+        const items = this.buildItemsArray(formData);
+        return items.reduce((sum, item) => sum + item.subtotal, 0);
+    }
+    
+    // 消費税を計算
+    calculateTax(formData) {
+        const subtotal = this.calculateSubtotal(formData);
+        return Math.ceil(subtotal * 0.1); // 10%の消費税（小数点切り上げ）
+    }
+    
+    // 合計を計算
+    calculateTotal(formData) {
+        const subtotal = this.calculateSubtotal(formData);
+        const tax = this.calculateTax(formData);
+        return subtotal + tax;
+    }
+
     // 管理ページモーダル表示
     showManagementPageModal() {
         const modalDiv = document.createElement('div');
