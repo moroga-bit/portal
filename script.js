@@ -599,7 +599,7 @@ class OrderFormManager {
         const subtotal = quantity * price;
         
         console.log('小計計算:', { quantity, price, subtotal });
-        row.querySelector('input[name="itemSubtotal[]"]').value = subtotal.toFixed(2);
+        row.querySelector('input[name="itemSubtotal[]"]').value = Math.floor(subtotal);
     }
 
     calculateTotals() {
@@ -622,6 +622,17 @@ class OrderFormManager {
         if (subtotalElement) subtotalElement.textContent = `¥${subtotal.toLocaleString()}`;
         if (taxElement) taxElement.textContent = `¥${tax.toLocaleString()}`;
         if (totalElement) totalElement.textContent = `¥${total.toLocaleString()}`;
+        
+        // 商品合計を表示
+        this.updateItemsTotal(subtotal);
+    }
+    
+    // 商品合計を更新
+    updateItemsTotal(total) {
+        const itemsTotalElement = document.getElementById('itemsTotal');
+        if (itemsTotalElement) {
+            itemsTotalElement.textContent = `¥${total.toLocaleString()}`;
+        }
     }
 
     showPreview() {

@@ -38,14 +38,14 @@ body::before {
 /* ヘッダー */
 .header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     color: #2c3e50;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 30px;
     flex-wrap: wrap;
-    padding: 50px 30px;
+    padding: 35px 30px;
     background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
     border-radius: 25px;
     box-shadow: 
@@ -149,8 +149,8 @@ body::before {
 }
 
 .header h1 {
-    font-size: 3.5rem;
-    margin-bottom: 20px;
+    font-size: 3.2rem;
+    margin-bottom: 12px;
     font-weight: 800;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     -webkit-background-clip: text;
@@ -169,14 +169,15 @@ body::before {
 }
 
 .header p {
-    font-size: 1.3rem;
-    color: #5a6c7d;
-    font-weight: 500;
-    line-height: 1.6;
-    max-width: 600px;
+    font-size: 1.1rem;
+    color: #6b7280;
+    font-weight: 400;
+    line-height: 1.4;
+    max-width: 500px;
     margin: 0 auto;
     position: relative;
     z-index: 1;
+    letter-spacing: 0.3px;
 }
 
 /* フォームコンテナ */
@@ -395,6 +396,34 @@ body::before {
     background: linear-gradient(135deg, #218838, #1e7e34);
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+}
+
+/* 商品合計表示 */
+.items-total-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: linear-gradient(145deg, #f8f9ff, #ffffff);
+    border-radius: 15px;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.05);
+}
+
+.items-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.items-total-label {
+    color: #5a6c7d;
+}
+
+.items-total-amount {
+    color: #667eea;
+    font-size: 1.4rem;
+    font-weight: 700;
 }
 
 /* 合計セクション */
