@@ -1369,12 +1369,6 @@ class OrderFormManager {
         console.log('=== 発注書管理登録開始 ===');
         
         try {
-            // フォームのバリデーション
-            if (!this.validateForm()) {
-                alert('必須項目を入力してください。');
-                return;
-            }
-
             const formData = this.getFormData();
             console.log('フォームデータ取得:', formData);
             
