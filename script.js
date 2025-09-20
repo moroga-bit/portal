@@ -633,13 +633,22 @@ class OrderFormManager {
 
     getFormData() {
         const form = document.getElementById('orderForm');
+        console.log('=== フォームデータ取得デバッグ ===');
+        console.log('フォーム要素:', form);
+        
+        if (!form) {
+            console.error('フォーム要素が見つかりません');
+            return {};
+        }
+        
         const formData = new FormData(form);
         const data = {};
         
-        console.log('=== フォームデータ取得デバッグ ===');
+        console.log('FormData作成完了');
         
         // 基本情報
         for (let [key, value] of formData.entries()) {
+            console.log(`フォームデータ: ${key} = ${value}`);
             if (key.endsWith('[]')) {
                 if (!data[key]) data[key] = [];
                 data[key].push(value);
@@ -652,6 +661,8 @@ class OrderFormManager {
                 console.log('担当者データの長さ:', value ? value.length : 'undefined');
             }
         }
+        
+        console.log('取得されたデータ:', data);
         
         // 商品情報の空行を除外
         if (data['itemName[]']) {
@@ -1469,10 +1480,13 @@ class OrderFormManager {
         try {
             console.log('=== saveOrderToStorage ===');
             console.log('保存するフォームデータ:', formData);
+            console.log('フォームデータの型:', typeof formData);
+            console.log('フォームデータのキー:', Object.keys(formData));
             
             // 既存の発注書データを取得
             const existingOrders = JSON.parse(localStorage.getItem('purchaseOrders') || '[]');
             console.log('既存の発注書数:', existingOrders.length);
+            console.log('既存の発注書データ:', existingOrders);
             
             // 新しい発注書IDを生成
             const orderId = 'order_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -1518,12 +1532,22 @@ class OrderFormManager {
     
     // 商品配列を構築
     buildItemsArray(formData) {
+        console.log('=== buildItemsArray ===');
+        console.log('フォームデータ:', formData);
+        
         const items = [];
         const projectNames = formData['itemProjectName[]'] || [];
         const itemNames = formData['itemName[]'] || [];
         const quantities = formData['itemQuantity[]'] || [];
         const units = formData['itemUnit[]'] || [];
         const prices = formData['itemPrice[]'] || [];
+        
+        console.log('商品データ:');
+        console.log('- 工事件名:', projectNames);
+        console.log('- 商品名:', itemNames);
+        console.log('- 数量:', quantities);
+        console.log('- 単位:', units);
+        console.log('- 単価:', prices);
         
         const maxLength = Math.max(
             projectNames.length,
