@@ -6,7 +6,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'BIZ UDGothic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: #333;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -388,7 +388,7 @@ body {
 
 /* 発注書プレビュースタイル - 白基調で印刷に最適化 */
 .order-preview {
-    font-family: 'Inter', 'Segoe UI', 'Hiragino Sans', 'ヒラギノ角ゴシック', 'Yu Gothic', 'Meiryo', sans-serif;
+    font-family: 'BIZ UDGothic', 'Inter', 'Segoe UI', 'Hiragino Sans', 'ヒラギノ角ゴシック', 'Yu Gothic', 'Meiryo', sans-serif;
     width: 794px; /* A4幅（210mm = 794px at 96dpi） */
     max-width: 794px;
     margin: 0 auto;
