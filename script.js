@@ -1385,9 +1385,6 @@ class OrderFormManager {
                 // プレビューを閉じる
                 this.hidePreview();
                 
-                // フォームをリセット
-                this.resetForm();
-                
                 // 発注書管理ページに移動するか確認
                 setTimeout(() => {
                     if (confirm('発注書管理ページを開いて確認しますか？')) {
