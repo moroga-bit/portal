@@ -16,7 +16,11 @@ class OrderManagementSystem {
     loadOrders() {
         try {
             const saved = localStorage.getItem('purchaseOrders');
-            return saved ? JSON.parse(saved) : [];
+            const orders = saved ? JSON.parse(saved) : [];
+            console.log('=== loadOrders ===');
+            console.log('LocalStorageから読み込んだ発注書数:', orders.length);
+            console.log('発注書データ:', orders);
+            return orders;
         } catch (error) {
             console.error('発注書データの読み込みエラー:', error);
             return [];
@@ -142,17 +146,26 @@ class OrderManagementSystem {
 
     // 発注書一覧をレンダリング
     renderOrders() {
+        console.log('=== renderOrders 開始 ===');
+        console.log('フィルタ済み発注書数:', this.filteredOrders.length);
+        console.log('フィルタ済み発注書:', this.filteredOrders);
+        
         const ordersGrid = document.getElementById('ordersGrid');
         const emptyState = document.getElementById('emptyState');
 
-        if (!ordersGrid) return;
+        if (!ordersGrid) {
+            console.error('ordersGrid が見つかりません');
+            return;
+        }
 
         if (this.filteredOrders.length === 0) {
+            console.log('発注書が0件のため、空の状態を表示');
             ordersGrid.style.display = 'none';
             if (emptyState) emptyState.style.display = 'block';
             return;
         }
 
+        console.log('発注書カードを生成中...');
         ordersGrid.style.display = 'grid';
         if (emptyState) emptyState.style.display = 'none';
 
@@ -160,6 +173,7 @@ class OrderManagementSystem {
         
         // 各カードのイベントリスナーを設定
         this.attachCardEventListeners();
+        console.log('=== renderOrders 完了 ===');
     }
 
     // 発注書カードを作成
