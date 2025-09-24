@@ -152,28 +152,25 @@ class OrderFormManager {
             }
         }, true);
 
-        // プレビューボタン（シンプルテスト）
+        // プレビューボタン
         const previewBtn = document.getElementById('previewBtn');
         console.log('プレビューボタン要素:', previewBtn);
         if (previewBtn) {
             previewBtn.addEventListener('click', (event) => {
-                console.log('プレビューボタンがクリックされました!');
+                console.log('プレビューボタンがクリックされました');
                 event.preventDefault();
-                
-                // 簡単なテスト
-                alert('プレビューボタンが動作しています！');
                 
                 // プレビュー表示
                 try {
-                this.showPreview();
+                    this.showPreview();
                 } catch (error) {
                     console.error('showPreviewエラー:', error);
-                    alert('エラー: ' + error.message);
+                    alert('プレビュー表示中にエラーが発生しました: ' + error.message);
                 }
             });
             console.log('プレビューボタンのイベントリスナーを設定しました');
         } else {
-            console.error('プレビューボタンが見つかりません！HTMLを確認してください');
+            console.error('プレビューボタンが見つかりません');
         }
 
         // プレビュー閉じるボタン
