@@ -201,31 +201,6 @@ class OrderFormManager {
             }
         });
 
-        // プレビュー内のPDF生成ボタン
-        const generatePdfBtn = document.getElementById('generatePdfBtn');
-        if (generatePdfBtn) {
-            generatePdfBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                console.log('PDF生成ボタンがクリックされました');
-                this.generatePDF();
-            });
-            console.log('PDF生成ボタンのイベントリスナーを設定しました');
-        } else {
-            console.error('generatePdfBtn が見つかりません');
-        }
-
-        // メール送信ボタン
-        const sendEmailBtn = document.getElementById('sendEmailBtn');
-        if (sendEmailBtn) {
-            sendEmailBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                console.log('メール送信ボタンがクリックされました');
-                this.sendPDFByEmail();
-            });
-            console.log('メール送信ボタンのイベントリスナーを設定しました');
-        } else {
-            console.error('sendEmailBtn が見つかりません');
-        }
 
         // PDF生成 & メール送信ボタン
         const generateAndEmailBtn = document.getElementById('generateAndEmailBtn');
@@ -253,18 +228,6 @@ class OrderFormManager {
             console.error('generateAndEmailBtn が見つかりません');
         }
 
-        // 印刷でPDFボタン
-        const printPdfBtn = document.getElementById('printPdfBtn');
-        if (printPdfBtn) {
-            printPdfBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                console.log('印刷でPDFボタンがクリックされました');
-                this.printToPDF();
-            });
-            console.log('印刷でPDFボタンのイベントリスナーを設定しました');
-        } else {
-            console.error('printPdfBtn が見つかりません');
-        }
 
         // リセットボタン
         const resetBtn = document.getElementById('resetBtn');
@@ -881,11 +844,6 @@ class OrderFormManager {
                 console.error('previewModal が見つかりません');
             }
             
-            // プレビュー表示時はメール送信ボタンを非表示にする
-            const sendEmailBtn = document.getElementById('sendEmailBtn');
-            if (sendEmailBtn) {
-                sendEmailBtn.style.display = 'none';
-            }
             
             console.log('showPreview 処理完了');
             
@@ -902,11 +860,6 @@ class OrderFormManager {
             previewModal.style.display = 'none';
         }
         
-        // メール送信ボタンを非表示にする
-        const sendEmailBtn = document.getElementById('sendEmailBtn');
-        if (sendEmailBtn) {
-            sendEmailBtn.style.display = 'none';
-        }
     }
 
     getFormData() {
