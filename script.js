@@ -2,10 +2,12 @@
 
 class OrderFormManager {
     constructor() {
+        console.log('=== OrderFormManager 初期化開始 ===');
         this.initializeEventListeners();
         this.setDefaultDate();
         this.setupExistingItemRows();
         this.calculateTotals();
+        console.log('=== OrderFormManager 初期化完了 ===');
     }
 
     initializeEventListeners() {
@@ -44,9 +46,16 @@ class OrderFormManager {
 
         // 数量・単価変更時の計算
         document.addEventListener('input', (e) => {
+            console.log('inputイベント発生:', e.target);
+            console.log('target.name:', e.target.name);
+            console.log('target.value:', e.target.value);
+            
             if (e.target.name === 'itemQuantity[]' || e.target.name === 'itemPrice[]') {
+                console.log('数量または単価が変更されました');
                 this.calculateItemSubtotal(e.target);
                 this.calculateTotals();
+            } else {
+                console.log('対象外のフィールドです');
             }
         });
 
@@ -566,27 +575,58 @@ class OrderFormManager {
     
     // 既存の商品行に計算機能を設定
     setupExistingItemRows() {
+        console.log('=== setupExistingItemRows 呼び出し ===');
         const itemRows = document.querySelectorAll('.item-row');
-        itemRows.forEach(row => {
+        console.log('既存の商品行数:', itemRows.length);
+        console.log('既存の商品行:', itemRows);
+        
+        itemRows.forEach((row, index) => {
+            console.log(`商品行 ${index + 1} の設定中:`, row);
             this.setupItemRowCalculation(row);
         });
+        
+        console.log('setupExistingItemRows 完了');
     }
     
     // 商品行の計算機能を設定
     setupItemRowCalculation(row) {
+        console.log('=== setupItemRowCalculation 呼び出し ===');
+        console.log('対象行:', row);
+        
         const quantityInput = row.querySelector('input[name="itemQuantity[]"]');
         const priceInput = row.querySelector('input[name="itemPrice[]"]');
+        const subtotalInput = row.querySelector('input[name="itemSubtotal[]"]');
+        
+        console.log('数量input:', quantityInput);
+        console.log('単価input:', priceInput);
+        console.log('小計input:', subtotalInput);
         
         if (quantityInput && priceInput) {
-            quantityInput.addEventListener('input', () => {
+            console.log('イベントリスナーを設定します');
+            
+            // 既存のリスナーを削除（重複防止）
+            quantityInput.removeEventListener('input', this.quantityChangeHandler);
+            priceInput.removeEventListener('input', this.priceChangeHandler);
+            
+            // 新しいリスナーを設定
+            this.quantityChangeHandler = () => {
+                console.log('数量入力イベント:', quantityInput.value);
                 this.calculateItemSubtotal(quantityInput);
                 this.calculateTotals();
-            });
+            };
             
-            priceInput.addEventListener('input', () => {
+            this.priceChangeHandler = () => {
+                console.log('単価入力イベント:', priceInput.value);
                 this.calculateItemSubtotal(priceInput);
                 this.calculateTotals();
-            });
+            };
+            
+            quantityInput.addEventListener('input', this.quantityChangeHandler);
+            priceInput.addEventListener('input', this.priceChangeHandler);
+            
+            console.log('イベントリスナー設定完了');
+        } else {
+            console.error('数量または単価のinputが見つかりません');
         }
     }
 
@@ -605,13 +645,39 @@ class OrderFormManager {
     }
 
     calculateItemSubtotal(input) {
+        console.log('=== calculateItemSubtotal が呼ばれました ===');
+        console.log('input要素:', input);
+        console.log('input.name:', input.name);
+        console.log('input.value:', input.value);
+        
         const row = input.closest('.item-row');
-        const quantity = parseFloat(row.querySelector('input[name="itemQuantity[]"]').value) || 0;
-        const price = parseFloat(row.querySelector('input[name="itemPrice[]"]').value) || 0;
+        console.log('対象行:', row);
+        
+        if (!row) {
+            console.error('行要素が見つかりません');
+            return;
+        }
+        
+        const quantityInput = row.querySelector('input[name="itemQuantity[]"]');
+        const priceInput = row.querySelector('input[name="itemPrice[]"]');
+        const subtotalInput = row.querySelector('input[name="itemSubtotal[]"]');
+        
+        console.log('数量input:', quantityInput);
+        console.log('単価input:', priceInput);
+        console.log('小計input:', subtotalInput);
+        
+        const quantity = parseFloat(quantityInput?.value) || 0;
+        const price = parseFloat(priceInput?.value) || 0;
         const subtotal = quantity * price;
         
         console.log('小計計算:', { quantity, price, subtotal });
-        row.querySelector('input[name="itemSubtotal[]"]').value = Math.floor(subtotal);
+        
+        if (subtotalInput) {
+            subtotalInput.value = Math.floor(subtotal);
+            console.log('小計を設定しました:', Math.floor(subtotal));
+        } else {
+            console.error('小計inputが見つかりません');
+        }
     }
 
     calculateTotals() {
