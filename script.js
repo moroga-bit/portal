@@ -1613,60 +1613,6 @@ class OrderFormManager {
             }
         });
     }
-}
-
-// グローバル関数（HTMLから呼び出される）
-function removeItem(button) {
-    const manager = window.orderFormManager;
-    if (manager) {
-        manager.removeItemRow(button);
-    }
-}
-
-// ページ読み込み時に初期化
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOMContentLoaded - 初期化開始');
-    
-    // プレビューボタンの存在確認
-    const previewBtn = document.getElementById('previewBtn');
-    console.log('DOMContentLoaded時点でのプレビューボタン:', previewBtn);
-    
-    try {
-        window.orderFormManager = new OrderFormManager();
-        console.log('OrderFormManager 初期化完了');
-        
-        // 初期化後にもう一度ボタンを確認
-        setTimeout(() => {
-            const previewBtnAfter = document.getElementById('previewBtn');
-            console.log('初期化後のプレビューボタン:', previewBtnAfter);
-            if (previewBtnAfter && !previewBtnAfter.onclick) {
-                console.log('手動でプレビューボタンにイベントを追加');
-                previewBtnAfter.addEventListener('click', () => {
-                    console.log('手動イベント: プレビューボタンクリック');
-                    if (window.orderFormManager) {
-                        window.orderFormManager.showPreview();
-                    }
-                });
-            }
-        }, 500);
-        
-    } catch (error) {
-        console.error('OrderFormManager 初期化エラー:', error);
-        alert('システム初期化エラー: ' + error.message);
-    }
-});
-
-// フォールバック: ページ読み込み完了後にも初期化を試行
-window.addEventListener('load', () => {
-    console.log('window.load - フォールバック初期化');
-    if (!window.orderFormManager) {
-        try {
-            window.orderFormManager = new OrderFormManager();
-            console.log('フォールバック初期化完了');
-        } catch (error) {
-            console.error('フォールバック初期化エラー:', error);
-        }
-    }
 
     // メール送信機能
     async sendPDFByEmail() {
@@ -1793,7 +1739,61 @@ Email: info@moroga.info`,
             alert('Google Workspace連携でエラーが発生しました。\n通常のメーラーを起動しました。\nPDFファイルを手動で添付してください。\n\nエラー: ' + error.message);
         }
     }
+}
+
+// グローバル関数（HTMLから呼び出される）
+function removeItem(button) {
+    const manager = window.orderFormManager;
+    if (manager) {
+        manager.removeItemRow(button);
+    }
+}
+
+// ページ読み込み時に初期化
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOMContentLoaded - 初期化開始');
+    
+    // プレビューボタンの存在確認
+    const previewBtn = document.getElementById('previewBtn');
+    console.log('DOMContentLoaded時点でのプレビューボタン:', previewBtn);
+    
+    try {
+        window.orderFormManager = new OrderFormManager();
+        console.log('OrderFormManager 初期化完了');
+        
+        // 初期化後にもう一度ボタンを確認
+        setTimeout(() => {
+            const previewBtnAfter = document.getElementById('previewBtn');
+            console.log('初期化後のプレビューボタン:', previewBtnAfter);
+            if (previewBtnAfter && !previewBtnAfter.onclick) {
+                console.log('手動でプレビューボタンにイベントを追加');
+                previewBtnAfter.addEventListener('click', () => {
+                    console.log('手動イベント: プレビューボタンクリック');
+                    if (window.orderFormManager) {
+                        window.orderFormManager.showPreview();
+                    }
+                });
+            }
+        }, 500);
+        
+    } catch (error) {
+        console.error('OrderFormManager 初期化エラー:', error);
+        alert('システム初期化エラー: ' + error.message);
+    }
 });
+
+// フォールバック: ページ読み込み完了後にも初期化を試行
+window.addEventListener('load', () => {
+    console.log('window.load - フォールバック初期化');
+    if (!window.orderFormManager) {
+        try {
+            window.orderFormManager = new OrderFormManager();
+            console.log('フォールバック初期化完了');
+        } catch (error) {
+            console.error('フォールバック初期化エラー:', error);
+        }
+    }
+}
 
 // フォームバリデーション
 document.getElementById('orderForm').addEventListener('submit', (e) => {
