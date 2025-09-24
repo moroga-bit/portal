@@ -1662,24 +1662,31 @@ class OrderFormManager {
             const data = this.getFormData();
             
             // メール件名と本文を作成
-            const subject = encodeURIComponent(`発注書 - ${data.supplierName} - ${data.orderDate}`);
-            const body = encodeURIComponent(`
-お疲れ様です。
+            const supplierName = data.supplierName || '発注先未入力';
+            const subject = encodeURIComponent(`【発注書】${supplierName} 様 - ${data.orderDate}`);
+            const body = encodeURIComponent(`${supplierName} 様
 
-発注書を送付いたします。
-ご確認のほど、よろしくお願いいたします。
+いつもお世話になっております。
+株式会社諸鹿彩色です。
 
-【発注詳細】
-発注先: ${data.supplierName}
+添付の発注書をご確認いただき、工事のお手配をお願いいたします。
+
+【発注内容】
+発注先: ${supplierName}
 発注日: ${data.orderDate}
-工事完了月: ${data.completionMonth || '未設定'}
+工事完了予定: ${data.completionMonth || '別途調整'}
 支払条件: ${data.paymentTerms}
 
+ご不明な点がございましたら、お気軽にお問い合わせください。
+よろしくお願いいたします。
+
+────────────────────────
 株式会社諸鹿彩色
-${data.staffMember ? data.staffMember : ''}
+${data.staffMember ? '担当: ' + data.staffMember : ''}
+〒321-0111 栃木県宇都宮市川田町1048-5
 TEL: 028-688-8618
 Email: info@moroga.info
-            `.trim());
+────────────────────────`);
 
             // 基本的なメーラー起動（PDFは手動添付が必要）
             const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
