@@ -641,6 +641,12 @@ class OrderFormManager {
         if (previewModal) {
             previewModal.style.display = 'block';
         }
+        
+        // プレビュー表示時はメール送信ボタンを非表示にする
+        const sendEmailBtn = document.getElementById('sendEmailBtn');
+        if (sendEmailBtn) {
+            sendEmailBtn.style.display = 'none';
+        }
     }
     
 
@@ -648,6 +654,12 @@ class OrderFormManager {
         const previewModal = document.getElementById('previewModal');
         if (previewModal) {
             previewModal.style.display = 'none';
+        }
+        
+        // メール送信ボタンを非表示にする
+        const sendEmailBtn = document.getElementById('sendEmailBtn');
+        if (sendEmailBtn) {
+            sendEmailBtn.style.display = 'none';
         }
     }
 
@@ -783,7 +795,7 @@ class OrderFormManager {
                 </div>
                 
                 <div class="supplier-section">
-                        <h3>発注先</h3>
+                    <h3>発注先</h3>
                     <div class="supplier-info">
                         <p><strong>${data.supplierName}</strong></p>
                         <p>${data.supplierAddress}</p>
@@ -834,11 +846,11 @@ class OrderFormManager {
                 ` : ''}
                 
                 <div class="footer-section">
-                            <p>この度はお取引いただき、誠にありがとうございます。</p>
+                    <p>この度はお取引いただき、誠にありがとうございます。</p>
                     <div class="signature">
                         <p>株式会社諸鹿彩色</p>
                         ${data.staffMember ? `<p>担当: ${data.staffMember}</p>` : ''}
-                                            </div>
+                    </div>
                 </div>
             </div>
         `;
