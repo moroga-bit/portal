@@ -44,7 +44,7 @@ class OrderFormManager {
             }
         });
 
-        // 数量・単価変更時の計算
+        // 数量・単価変更時の計算（簡単な方法）
         document.addEventListener('input', (e) => {
             console.log('inputイベント発生:', e.target);
             console.log('target.name:', e.target.name);
@@ -52,12 +52,78 @@ class OrderFormManager {
             
             if (e.target.name === 'itemQuantity[]' || e.target.name === 'itemPrice[]') {
                 console.log('数量または単価が変更されました');
-                this.calculateItemSubtotal(e.target);
-                this.calculateTotals();
+                
+                // 簡単な方法で小計を計算
+                const row = e.target.closest('.item-row');
+                if (row) {
+                    const quantityInput = row.querySelector('input[name="itemQuantity[]"]');
+                    const priceInput = row.querySelector('input[name="itemPrice[]"]');
+                    const subtotalInput = row.querySelector('input[name="itemSubtotal[]"]');
+                    
+                    if (quantityInput && priceInput && subtotalInput) {
+                        const quantity = parseFloat(quantityInput.value) || 0;
+                        const price = parseFloat(priceInput.value) || 0;
+                        const subtotal = quantity * price;
+                        
+                        console.log('直接計算:', { quantity, price, subtotal });
+                        subtotalInput.value = Math.floor(subtotal);
+                        
+                        // 合計も更新
+                        this.calculateTotals();
+                    }
+                }
             } else {
                 console.log('対象外のフィールドです');
             }
         });
+
+        // changeイベントもバックアップとして追加
+        document.addEventListener('change', (e) => {
+            if (e.target.name === 'itemQuantity[]' || e.target.name === 'itemPrice[]') {
+                console.log('changeイベント:', e.target.name, e.target.value);
+                
+                const row = e.target.closest('.item-row');
+                if (row) {
+                    const quantityInput = row.querySelector('input[name="itemQuantity[]"]');
+                    const priceInput = row.querySelector('input[name="itemPrice[]"]');
+                    const subtotalInput = row.querySelector('input[name="itemSubtotal[]"]');
+                    
+                    if (quantityInput && priceInput && subtotalInput) {
+                        const quantity = parseFloat(quantityInput.value) || 0;
+                        const price = parseFloat(priceInput.value) || 0;
+                        const subtotal = quantity * price;
+                        
+                        console.log('changeイベント計算:', { quantity, price, subtotal });
+                        subtotalInput.value = Math.floor(subtotal);
+                        this.calculateTotals();
+                    }
+                }
+            }
+        });
+
+        // blurイベント（フォーカスが外れた時）も追加
+        document.addEventListener('blur', (e) => {
+            if (e.target.name === 'itemQuantity[]' || e.target.name === 'itemPrice[]') {
+                console.log('blurイベント:', e.target.name, e.target.value);
+                
+                const row = e.target.closest('.item-row');
+                if (row) {
+                    const quantityInput = row.querySelector('input[name="itemQuantity[]"]');
+                    const priceInput = row.querySelector('input[name="itemPrice[]"]');
+                    const subtotalInput = row.querySelector('input[name="itemSubtotal[]"]');
+                    
+                    if (quantityInput && priceInput && subtotalInput) {
+                        const quantity = parseFloat(quantityInput.value) || 0;
+                        const price = parseFloat(priceInput.value) || 0;
+                        const subtotal = quantity * price;
+                        
+                        console.log('blurイベント計算:', { quantity, price, subtotal });
+                        subtotalInput.value = Math.floor(subtotal);
+                        this.calculateTotals();
+                    }
+                }
+            }
+        }, true); // useCapture=true でより確実にキャッチ
 
         // プレビューボタン
         const previewBtn = document.getElementById('previewBtn');
