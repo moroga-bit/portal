@@ -132,6 +132,26 @@ class OrderFormManager {
             }
         }, true); // useCapture=true でより確実にキャッチ
 
+        // Enterキーで次のフィールドに移動
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.closest('.item-row')) {
+                e.preventDefault();
+                this.moveToNextField(e.target);
+            }
+        });
+
+        // フィールドから離れた時の自動移動（数値入力完了時）
+        document.addEventListener('blur', (e) => {
+            if (e.target.name === 'itemQuantity[]' || e.target.name === 'itemPrice[]') {
+                // 値が入力されていて、次のフィールドが空の場合は自動移動
+                if (e.target.value && e.target.value.trim() !== '') {
+                    setTimeout(() => {
+                        this.moveToNextField(e.target);
+                    }, 100); // 少し遅延させて他の処理を完了させる
+                }
+            }
+        }, true);
+
         // プレビューボタン（シンプルテスト）
         const previewBtn = document.getElementById('previewBtn');
         console.log('プレビューボタン要素:', previewBtn);
@@ -1779,6 +1799,82 @@ Email: info@moroga.info`,
         // 合計も再計算
         this.calculateTotals();
         console.log('=== 強制計算完了 ===');
+    }
+
+    // 次のフィールドに移動
+    moveToNextField(currentField) {
+        const row = currentField.closest('.item-row');
+        if (!row) return;
+
+        // 現在の行内でのフィールド順序を定義
+        const fieldOrder = [
+            'input[name="itemProjectName[]"]',  // 工事名
+            'input[name="itemName[]"]',         // 商品名
+            'input[name="itemQuantity[]"]',     // 数量
+            'input[name="itemUnit[]"]',         // 単位
+            'input[name="itemPrice[]"]'         // 単価
+            // 小計は readonly なのでスキップ
+        ];
+
+        // 現在のフィールドのインデックスを取得
+        let currentIndex = -1;
+        for (let i = 0; i < fieldOrder.length; i++) {
+            const field = row.querySelector(fieldOrder[i]);
+            if (field === currentField) {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        // 次のフィールドに移動
+        if (currentIndex >= 0 && currentIndex < fieldOrder.length - 1) {
+            const nextField = row.querySelector(fieldOrder[currentIndex + 1]);
+            if (nextField) {
+                nextField.focus();
+                nextField.select(); // 既存の内容を選択
+                console.log('次のフィールドに移動:', fieldOrder[currentIndex + 1]);
+            }
+        } else if (currentIndex === fieldOrder.length - 1) {
+            // 最後のフィールド（単価）の場合、次の行の最初のフィールドに移動
+            this.moveToNextRow(row);
+        }
+    }
+
+    // 次の行に移動
+    moveToNextRow(currentRow) {
+        const container = document.getElementById('itemsContainer');
+        const rows = container.querySelectorAll('.item-row');
+        
+        let currentIndex = -1;
+        for (let i = 0; i < rows.length; i++) {
+            if (rows[i] === currentRow) {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        if (currentIndex >= 0 && currentIndex < rows.length - 1) {
+            // 次の行が存在する場合
+            const nextRow = rows[currentIndex + 1];
+            const firstField = nextRow.querySelector('input[name="itemProjectName[]"]');
+            if (firstField) {
+                firstField.focus();
+                firstField.select();
+                console.log('次の行に移動');
+            }
+        } else {
+            // 最後の行の場合、新しい行を追加
+            this.addItemRow();
+            setTimeout(() => {
+                const newRows = container.querySelectorAll('.item-row');
+                const newRow = newRows[newRows.length - 1];
+                const firstField = newRow.querySelector('input[name="itemProjectName[]"]');
+                if (firstField) {
+                    firstField.focus();
+                    console.log('新しい行を追加して移動');
+                }
+            }, 100);
+        }
     }
 }
 
