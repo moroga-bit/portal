@@ -800,142 +800,117 @@ body::before {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.header-section {
+/* PDFヘッダー（シンプル白背景） */
+.pdf-header {
     margin-bottom: 40px;
-    border-bottom: 3px solid #667eea;
-    padding-bottom: 30px;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 25px;
+    background: white;
 }
 
-/* PDF用の大きなヘッダーレイアウト */
-.pdf-header-top {
+.header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-    padding: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 12px;
-    color: white;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    margin-bottom: 20px;
 }
 
-.company-logo-large {
+.logo-section {
     display: flex;
     align-items: center;
-    gap: 15px;
 }
 
-.logo-image-large {
-    max-width: 120px;
-    max-height: 120px;
+.header-logo {
+    max-width: 100px;
+    max-height: 100px;
     object-fit: contain;
-    border-radius: 12px;
-    background: white;
-    padding: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.logo-fallback-large {
+.header-logo-fallback {
     display: none;
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 120px;
-    height: 120px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 12px;
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
-.logo-icon-large {
-    font-size: 3rem;
+.header-logo-icon {
+    font-size: 2.5rem;
     font-weight: 900;
     color: white;
-    margin-bottom: 5px;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.logo-company-large {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: white;
-    letter-spacing: 2px;
     margin-bottom: 3px;
 }
 
-.logo-subtitle-large {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 500;
-    text-align: center;
-}
-
-.order-title-large {
-    text-align: right;
-}
-
-.order-title-large h1 {
-    font-size: 3rem;
-    font-weight: 900;
+.header-logo-text {
+    font-size: 1rem;
+    font-weight: 700;
     color: white;
-    margin-bottom: 15px;
-    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    letter-spacing: 2px;
-}
-
-.order-date-large {
-    background: rgba(255, 255, 255, 0.15);
-    padding: 15px 25px;
-    border-radius: 10px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.date-label {
-    display: block;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
-    font-weight: 600;
-    margin-bottom: 5px;
-    text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.date-value {
-    display: block;
-    font-size: 1.3rem;
-    color: white;
-    font-weight: bold;
+.header-info {
+    text-align: center;
+    flex-grow: 1;
+    margin: 0 30px;
 }
 
-.company-details {
-    background: #f8f9ff;
-    padding: 25px;
-    border-radius: 12px;
-    border-left: 5px solid #667eea;
-}
-
-.company-info-section h2 {
+.header-info h1 {
+    font-size: 1.8rem;
     color: #2c3e50;
-    font-size: 1.4rem;
+    margin-bottom: 8px;
     font-weight: bold;
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid #667eea;
 }
 
-.company-data .company-name {
-    font-size: 1.3rem;
-    font-weight: bold;
+.header-info p {
+    margin: 3px 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.document-title {
+    text-align: right;
+}
+
+.document-title h2 {
+    font-size: 2.5rem;
     color: #2c3e50;
-    margin-bottom: 10px;
+    font-weight: 900;
+    margin: 0;
 }
 
-.company-data .staff-name {
+.header-bottom {
+    padding: 15px 0;
+}
+
+.order-details-header {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detail-label {
     font-weight: 600;
-    color: #667eea;
-    margin-top: 10px;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.detail-value {
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 0.9rem;
 }
 
 
@@ -1101,29 +1076,65 @@ body::before {
     color: #555;
 }
 
-.footer-section {
-    border-top: 2px solid #e0e0e0;
-    padding-top: 20px;
+/* PDFフッター（シンプル白背景） */
+.pdf-footer {
+    border-top: 2px solid #e9ecef;
+    padding-top: 25px;
+    margin-top: 40px;
+    background: white;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+}
+
+.footer-logo-img {
+    max-width: 60px;
+    max-height: 60px;
+    object-fit: contain;
+}
+
+.footer-logo-fallback {
+    display: none;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-logo-icon {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: white;
+}
+
+.footer-info {
     text-align: center;
 }
 
-.footer-section p {
-    margin: 10px 0;
-    color: #666;
+.footer-thanks {
+    margin: 0 0 8px 0;
+    color: #495057;
+    font-size: 0.95rem;
+    font-style: italic;
 }
 
-.signature {
-    margin-top: 15px;
-    padding: 15px;
-    background: #f0f7ff;
-    border-radius: 8px;
-    display: inline-block;
-}
-
-.signature p {
-    margin: 5px 0;
+.footer-company {
+    margin: 0;
     color: #2c3e50;
     font-weight: bold;
+    font-size: 1.1rem;
 }
 
 /* アニメーション */

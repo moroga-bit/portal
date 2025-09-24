@@ -980,50 +980,54 @@ class OrderFormManager {
         
         return `
             <div class="order-preview">
-                <div class="header-section">
-                    <div class="pdf-header-top">
-                        <div class="company-logo-large">
-                            <img src="logo.png" alt="株式会社諸鹿彩色" class="logo-image-large" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div class="logo-fallback-large">
-                                <div class="logo-icon-large">M</div>
-                                <div class="logo-company-large">MOROGA</div>
-                                <div class="logo-subtitle-large">株式会社諸鹿彩色</div>
+                <div class="pdf-header">
+                    <div class="header-top">
+                        <div class="logo-section">
+                            <img src="logo.png" alt="株式会社諸鹿彩色" class="header-logo" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="header-logo-fallback">
+                                <div class="header-logo-icon">M</div>
+                                <div class="header-logo-text">MOROGA</div>
                             </div>
                         </div>
-                        <div class="order-title-large">
-                            <h1>発注書</h1>
-                            <div class="order-date-large">
-                                <span class="date-label">発注日</span>
-                                <span class="date-value">${data.orderDate}</span>
-                            </div>
+                        <div class="header-info">
+                            <h1>株式会社諸鹿彩色</h1>
+                            <p>〒321-0111 栃木県宇都宮市川田町1048-5</p>
+                            <p>TEL: 028-688-8618 | Email: info@moroga.info</p>
+                        </div>
+                        <div class="document-title">
+                            <h2>発注書</h2>
                         </div>
                     </div>
                     
-                    <div class="company-details">
-                        <div class="company-info-section">
-                            <h2>発注元</h2>
-                            <div class="company-data">
-                                <p class="company-name">${data.companyName}</p>
-                                <p>〒321-0111 栃木県宇都宮市川田町1048-5</p>
-                                <p>TEL: 028-688-8618 | Email: info@moroga.info</p>
-                                ${data.staffMember ? `<p class="staff-name">担当: ${data.staffMember}</p>` : ''}
+                    <div class="header-bottom">
+                        <div class="order-details-header">
+                            <div class="detail-item">
+                                <span class="detail-label">発注日:</span>
+                                <span class="detail-value">${data.orderDate}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">工事完了予定:</span>
+                                <span class="detail-value">${data.completionMonth || '別途調整'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">支払条件:</span>
+                                <span class="detail-value">${data.paymentTerms}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">担当:</span>
+                                <span class="detail-value">${data.staffMember || '未設定'}</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="supplier-section">
-                        <h3>発注先</h3>
+                    <h3>発注先</h3>
                     <div class="supplier-info">
                         <p><strong>${data.supplierName}</strong></p>
                         <p>${data.supplierAddress}</p>
                         ${data.contactPerson ? `<p>担当者: ${data.contactPerson}</p>` : ''}
                     </div>
-                </div>
-                
-                <div class="order-info">
-                    ${data.completionMonth ? `<p><strong>工事完了月:</strong> ${data.completionMonth}</p>` : ''}
-                    <p><strong>支払条件:</strong> ${data.paymentTerms}</p>
                 </div>
                 
                 <table class="items-table">
@@ -1064,12 +1068,19 @@ class OrderFormManager {
                     </div>
                 ` : ''}
                 
-                <div class="footer-section">
-                            <p>この度はお取引いただき、誠にありがとうございます。</p>
-                    <div class="signature">
-                        <p>株式会社諸鹿彩色</p>
-                        ${data.staffMember ? `<p>担当: ${data.staffMember}</p>` : ''}
-                                            </div>
+                <div class="pdf-footer">
+                    <div class="footer-content">
+                        <div class="footer-logo">
+                            <img src="logo.png" alt="株式会社諸鹿彩色" class="footer-logo-img" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="footer-logo-fallback">
+                                <div class="footer-logo-icon">M</div>
+                            </div>
+                        </div>
+                        <div class="footer-info">
+                            <p class="footer-thanks">この度はお取引いただき、誠にありがとうございます。</p>
+                            <p class="footer-company">株式会社諸鹿彩色</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
