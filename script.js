@@ -85,6 +85,19 @@ class OrderFormManager {
             console.error('generatePdfBtn が見つかりません');
         }
 
+        // メール送信ボタン
+        const sendEmailBtn = document.getElementById('sendEmailBtn');
+        if (sendEmailBtn) {
+            sendEmailBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('メール送信ボタンがクリックされました');
+                this.sendPDFByEmail();
+            });
+            console.log('メール送信ボタンのイベントリスナーを設定しました');
+        } else {
+            console.error('sendEmailBtn が見つかりません');
+        }
+
 
 
         // リセットボタン
@@ -747,13 +760,25 @@ class OrderFormManager {
             <div class="order-preview">
                 <div class="header-section">
                     <div class="company-header">
-                        <h1>株式会社諸鹿彩色</h1>
-                        <p>〒321-0111 栃木県宇都宮市川田町1048-5</p>
-                        <p>TEL: 028-688-8618 | Email: info@moroga.info</p>
+                        <div class="company-logo">
+                            <img src="logo.png" alt="株式会社諸鹿彩色" class="logo-image" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="logo-fallback">
+                                <div class="logo-icon">M</div>
+                                <div class="logo-company">MOROGA</div>
+                            </div>
                         </div>
+                        <div class="company-info">
+                            <h1>株式会社諸鹿彩色</h1>
+                            <p>〒321-0111 栃木県宇都宮市川田町1048-5</p>
+                            <p>TEL: 028-688-8618 | Email: info@moroga.info</p>
+                        </div>
+                    </div>
                     <div class="order-title">
                         <h2>発注書</h2>
-                        <p>発注日: ${data.orderDate}</p>
+                        <div class="order-date">
+                            <span>発注日</span>
+                            <span>${data.orderDate}</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -774,11 +799,11 @@ class OrderFormManager {
                 <table class="items-table">
                     <thead>
                         <tr>
-                                <th>工事名</th>
-                            <th>商品名</th>
+                            <th>項目</th>
+                            <th>商品</th>
                             <th>数量</th>
                             <th>単価</th>
-                            <th>小計</th>
+                            <th>金額</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -893,6 +918,18 @@ class OrderFormManager {
             pdf.save(fileName);
             
             console.log('PDF生成完了:', fileName);
+            
+            // PDF生成成功時にメール送信ボタンを表示
+            const sendEmailBtn = document.getElementById('sendEmailBtn');
+            if (sendEmailBtn) {
+                sendEmailBtn.style.display = 'block';
+                // 生成されたPDFデータを保存
+                this.lastGeneratedPDF = {
+                    data: imgData,
+                    fileName: fileName,
+                    blob: new Blob([pdf.output('blob')], { type: 'application/pdf' })
+                };
+            }
             
         } catch (error) {
             console.error('PDF生成エラー:', error);
@@ -1410,6 +1447,91 @@ window.addEventListener('load', () => {
         } catch (error) {
             console.error('フォールバック初期化エラー:', error);
         }
+    }
+
+    // メール送信機能
+    async sendPDFByEmail() {
+        try {
+            const data = this.getFormData();
+            
+            // メール件名と本文を作成
+            const subject = encodeURIComponent(`発注書 - ${data.supplierName} - ${data.orderDate}`);
+            const body = encodeURIComponent(`
+お疲れ様です。
+
+発注書を送付いたします。
+ご確認のほど、よろしくお願いいたします。
+
+【発注詳細】
+発注先: ${data.supplierName}
+発注日: ${data.orderDate}
+工事完了月: ${data.completionMonth || '未設定'}
+支払条件: ${data.paymentTerms}
+
+株式会社諸鹿彩色
+${data.staffMember ? data.staffMember : ''}
+TEL: 028-688-8618
+Email: info@moroga.info
+            `.trim());
+
+            // 基本的なメーラー起動（PDFは手動添付が必要）
+            const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+            
+            // Google Workspace連携が利用可能かチェック
+            if (this.isGoogleWorkspaceAvailable()) {
+                await this.sendWithGoogleWorkspace();
+            } else {
+                // 標準のメーラーを起動
+                window.open(mailtoLink);
+                alert('メーラーが起動されました。\n生成されたPDFファイルを手動で添付してください。');
+            }
+            
+        } catch (error) {
+            console.error('メール送信エラー:', error);
+            alert('メール送信中にエラーが発生しました: ' + error.message);
+        }
+    }
+
+    // Google Workspaceが利用可能かチェック
+    isGoogleWorkspaceAvailable() {
+        // Google APIs Client Libraryが読み込まれているかチェック
+        return typeof gapi !== 'undefined';
+    }
+
+    // Google Workspace連携でのメール送信
+    async sendWithGoogleWorkspace() {
+        try {
+            // Google API認証
+            await this.initializeGoogleAPIs();
+            
+            // Gmail APIでメール送信
+            await this.sendGmail();
+            
+            // Google Drive APIでPDF保存
+            await this.saveToDrive();
+            
+        } catch (error) {
+            console.error('Google Workspace連携エラー:', error);
+            throw error;
+        }
+    }
+
+    // Google APIs初期化
+    async initializeGoogleAPIs() {
+        // まずは簡単な実装で、後で詳細な認証を追加
+        console.log('Google APIs初期化中...');
+    }
+
+    // Gmail API使用してメール送信
+    async sendGmail() {
+        console.log('Gmail APIでメール送信中...');
+        // 実装予定
+    }
+
+    // Google Drive APIでPDF保存
+    async saveToDrive() {
+        console.log('Google DriveにPDF保存中...');
+        // 実装予定
     }
 });
 
