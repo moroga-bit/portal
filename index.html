@@ -95,13 +95,6 @@
                 <div class="form-section">
                     <h2>商品情報</h2>
                     
-                    <!-- 工事種別ボタン -->
-                    <div class="work-type-buttons">
-                        <button type="button" class="work-type-btn" data-type="足場工事">足場工事</button>
-                        <button type="button" class="work-type-btn" data-type="コーキング工事">コーキング工事</button>
-                        <button type="button" class="work-type-btn" data-type="塗装工事">塗装工事</button>
-                        <button type="button" class="work-type-btn" data-type="その他工事">その他工事</button>
-                    </div>
                     
                     <div id="itemsContainer">
                         <!-- デフォルトで3行表示 -->
@@ -194,10 +187,20 @@
                         </div>
                     </div>
                     
-                    <div class="button-group">
-                        <button type="button" id="addItemBtn" class="btn btn-secondary">商品を追加</button>
-                        <div class="total-display">
-                            <span>商品合計: ¥<span id="itemsTotal">0</span></span>
+                    <!-- 商品操作エリア -->
+                    <div class="item-controls">
+                        <div class="add-item-section">
+                            <button type="button" id="addItemBtn" class="btn-add-item">
+                                <span class="btn-icon">+</span>
+                                <span class="btn-text">商品を追加</span>
+                            </button>
+                        </div>
+                        
+                        <div class="total-summary">
+                            <div class="total-card">
+                                <div class="total-label">商品合計</div>
+                                <div class="total-amount">¥<span id="itemsTotal">0</span></div>
+                            </div>
                         </div>
                     </div>
                 </div>

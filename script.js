@@ -34,12 +34,6 @@ class OrderFormManager {
             }, 100);
         }
 
-        // 工事種別ボタン
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('work-type-btn')) {
-                this.handleWorkTypeClick(e.target);
-            }
-        });
 
         // 商品削除ボタン（動的に追加される）
         document.addEventListener('click', (e) => {
@@ -78,28 +72,18 @@ class OrderFormManager {
             console.error('closePreviewBtn が見つかりません');
         }
 
-        // プレビュー内のPDF生成ボタン（高品質版）
-        const generatePdfFromPreviewBtn = document.getElementById('generatePdfFromPreviewBtn');
-        console.log('PDF生成ボタン要素:', generatePdfFromPreviewBtn);
-        if (generatePdfFromPreviewBtn) {
-            generatePdfFromPreviewBtn.addEventListener('click', (e) => {
+        // プレビュー内のPDF生成ボタン
+        const generatePdfBtn = document.getElementById('generatePdfBtn');
+        if (generatePdfBtn) {
+            generatePdfBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('プレビュー内PDF生成ボタンがクリックされました');
-                this.generateHighQualityPDFFromPreview();
+                console.log('PDF生成ボタンがクリックされました');
+                this.generatePDF();
             });
             console.log('PDF生成ボタンのイベントリスナーを設定しました');
         } else {
-            console.error('generatePdfFromPreviewBtn が見つかりません');
+            console.error('generatePdfBtn が見つかりません');
         }
-
-        // プレビューエリア内のボタンは動的に生成されるため、イベント委譲を使用
-        document.addEventListener('click', (e) => {
-            if (e.target && e.target.id === 'registerToManagementBtn') {
-                e.preventDefault();
-                console.log('発注書管理登録ボタンがクリックされました');
-                this.registerToManagement();
-        }
-        });
 
 
 
@@ -507,27 +491,6 @@ class OrderFormManager {
         document.getElementById('orderDate').value = today;
     }
 
-    handleWorkTypeClick(button) {
-        // すべてのボタンからactiveクラスを削除
-        document.querySelectorAll('.work-type-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        // クリックされたボタンにactiveクラスを追加
-        button.classList.add('active');
-        
-        // 工事種別を取得
-        const workType = button.getAttribute('data-type');
-        console.log('選択された工事種別:', workType);
-        
-        // 現在の商品行の工事名フィールドに設定
-        const projectNameInputs = document.querySelectorAll('input[name="itemProjectName[]"]');
-        projectNameInputs.forEach(input => {
-            if (!input.value.trim()) {
-                input.value = workType;
-            }
-        });
-    }
 
     addItemRow() {
         const container = document.getElementById('itemsContainer');
@@ -653,46 +616,26 @@ class OrderFormManager {
 
     showPreview() {
         const formData = this.getFormData();
-        
-        // 発注書データを保存
-        const orderId = this.saveOrderToStorage(formData);
-        if (orderId) {
-            console.log('発注書データを保存しました。ID:', orderId);
-        }
-        
         const previewContent = this.generatePreviewHTML(formData);
         
-        document.getElementById('previewContent').innerHTML = previewContent;
-        document.getElementById('previewArea').style.display = 'block';
+        const previewModal = document.getElementById('previewModal');
+        const previewContentDiv = document.getElementById('previewContent');
         
-        // プレビューエリアにスクロール
-        document.getElementById('previewArea').scrollIntoView({ behavior: 'smooth' });
+        if (previewContentDiv) {
+            previewContentDiv.innerHTML = previewContent;
+        }
         
-        // PDF生成ボタンのイベントリスナーを再設定
-        this.setupPreviewButtons();
-    }
-    
-    setupPreviewButtons() {
-        const generatePdfFromPreviewBtn = document.getElementById('generatePdfFromPreviewBtn');
-        console.log('プレビュー表示後のPDF生成ボタン要素:', generatePdfFromPreviewBtn);
-        if (generatePdfFromPreviewBtn) {
-            // 既存のイベントリスナーを削除
-            generatePdfFromPreviewBtn.replaceWith(generatePdfFromPreviewBtn.cloneNode(true));
-            const newBtn = document.getElementById('generatePdfFromPreviewBtn');
-            
-            newBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                console.log('プレビュー内PDF生成ボタンがクリックされました');
-                this.generateHighQualityPDFFromPreview();
-            });
-            console.log('プレビュー表示後のPDF生成ボタンのイベントリスナーを設定しました');
-        } else {
-            console.error('プレビュー表示後のgeneratePdfFromPreviewBtn が見つかりません');
+        if (previewModal) {
+            previewModal.style.display = 'block';
         }
     }
+    
 
     hidePreview() {
-        document.getElementById('previewArea').style.display = 'none';
+        const previewModal = document.getElementById('previewModal');
+        if (previewModal) {
+            previewModal.style.display = 'none';
+        }
     }
 
     getFormData() {
@@ -1172,107 +1115,6 @@ class OrderFormManager {
 
 
 
-    // プレビューからPDF生成（確実版）
-    async generateHighQualityPDFFromPreview() {
-        console.log('PDF生成開始');
-        
-        try {
-            // ライブラリの確認
-            if (typeof window.jspdf === 'undefined') {
-                console.error('jsPDFライブラリが読み込まれていません');
-                alert('jsPDFライブラリが読み込まれていません。ページを再読み込みしてください。');
-                return;
-            }
-            
-            if (typeof html2canvas === 'undefined') {
-                console.error('html2canvasライブラリが読み込まれていません');
-                alert('html2canvasライブラリが読み込まれていません。ページを再読み込みしてください。');
-                return;
-            }
-            
-            const previewElement = document.getElementById('previewContent');
-            if (!previewElement) {
-                console.error('プレビュー要素が見つかりません');
-                alert('プレビューが表示されていません。先にプレビューを表示してください。');
-                return;
-            }
-            
-            const contentElement = previewElement.querySelector('.order-preview');
-            if (!contentElement) {
-                console.error('発注書プレビュー要素が見つかりません');
-                alert('発注書プレビューが見つかりません。');
-                return;
-            }
-            
-            console.log('プレビュー要素を発見:', contentElement);
-            
-            // ボタンの状態を更新
-            const generateBtn = document.getElementById('generatePdfFromPreviewBtn');
-            if (generateBtn) {
-                generateBtn.textContent = 'PDF生成中...';
-                generateBtn.disabled = true;
-            }
-            
-            // html2canvasでキャプチャ
-            console.log('html2canvas実行開始');
-            const canvas = await html2canvas(contentElement, {
-                scale: 1.5,
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: '#ffffff',
-                logging: true,
-                imageTimeout: 5000
-            });
-            
-            console.log('Canvas生成完了:', canvas.width, 'x', canvas.height);
-            
-            // PDF作成
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            
-            const pageWidth = pdf.internal.pageSize.getWidth(); // 210mm
-            const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
-            
-            // 画像サイズ計算
-            const margin = 15;
-            let imgWidth = pageWidth - margin * 2;
-            let imgHeight = (canvas.height * imgWidth) / canvas.width;
-            
-            // 高さ調整
-            if (imgHeight > pageHeight - margin * 2) {
-                imgHeight = pageHeight - margin * 2;
-                imgWidth = (canvas.width * imgHeight) / canvas.height;
-            }
-            
-            // 中央配置
-            const x = (pageWidth - imgWidth) / 2;
-            const y = (pageHeight - imgHeight) / 2;
-            
-            console.log('PDF画像サイズ:', imgWidth, 'x', imgHeight);
-            console.log('PDF配置位置:', x, y);
-            
-            // 画像をPDFに追加
-            const imgData = canvas.toDataURL('image/png', 0.95);
-            pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
-            
-            // PDF保存
-            const fileName = `発注書_${new Date().toISOString().split('T')[0]}.pdf`;
-            pdf.save(fileName);
-            
-            console.log('PDF生成完了:', fileName);
-            alert('PDF生成が完了しました！');
-            
-        } catch (error) {
-            console.error('PDF生成エラー:', error);
-            alert('PDF生成エラー: ' + error.message);
-        } finally {
-            const generateBtn = document.getElementById('generatePdfFromPreviewBtn');
-            if (generateBtn) {
-                generateBtn.textContent = 'PDF生成';
-                generateBtn.disabled = false;
-            }
-        }
-    }
 
 
     resetForm() {

@@ -282,56 +282,6 @@ body::before {
     color: #6c757d;
 }
 
-/* 工事種別ボタン */
-.work-type-buttons {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.work-type-btn {
-    padding: 12px 24px;
-    border: 2px solid #667eea;
-    border-radius: 25px;
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
-    color: #667eea;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.work-type-btn:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
-}
-
-.work-type-btn.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
-
-.work-type-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    transition: left 0.5s ease;
-}
-
-.work-type-btn:hover::before {
-    left: 100%;
-}
 
 /* 商品行 */
 .item-row {
@@ -397,6 +347,146 @@ body::before {
 .remove-item-btn:hover {
     background: #c82333;
     transform: translateY(-1px);
+}
+
+/* 商品操作エリア */
+.item-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 30px 0;
+    padding: 25px;
+    background: linear-gradient(145deg, #f8f9ff 0%, #ffffff 100%);
+    border-radius: 20px;
+    border: 2px solid rgba(102, 126, 234, 0.1);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.item-controls::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #667eea);
+    background-size: 200% 100%;
+    animation: gradientShift 3s ease-in-out infinite;
+}
+
+.add-item-section {
+    display: flex;
+    align-items: center;
+}
+
+.btn-add-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 28px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-add-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-add-item:hover::before {
+    left: 100%;
+}
+
+.btn-add-item:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.btn-icon {
+    font-size: 1.2rem;
+    font-weight: 700;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.btn-add-item:hover .btn-icon {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.btn-text {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.total-summary {
+    display: flex;
+    align-items: center;
+}
+
+.total-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 15px;
+    padding: 20px 25px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+    position: relative;
+    overflow: hidden;
+    min-width: 150px;
+}
+
+.total-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.total-label {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 500;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.total-amount {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 4px rgba(102, 126, 234, 0.1);
 }
 
 /* ボタングループ */
@@ -590,13 +680,35 @@ body::before {
         text-align: center;
     }
     
-    .work-type-buttons {
-        gap: 10px;
+    .item-controls {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
     }
     
-    .work-type-btn {
-        padding: 10px 16px;
-        font-size: 0.8rem;
+    .add-item-section {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn-add-item {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 24px;
+    }
+    
+    .total-summary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .total-card {
+        min-width: 120px;
+        padding: 15px 20px;
+    }
+    
+    .total-amount {
+        font-size: 1.5rem;
     }
     
     .button-group {
