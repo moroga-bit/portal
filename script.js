@@ -1094,13 +1094,16 @@ class OrderFormManager {
     }
 
     async generatePDF() {
-        const generateBtn = document.getElementById('generatePdfBtn');
-        const originalText = generateBtn.textContent;
+        // PDF生成&メール送信ボタンを取得（generatePdfBtnは削除済み）
+        const generateBtn = document.getElementById('generateAndEmailBtn');
+        const originalText = generateBtn ? generateBtn.textContent : 'PDF生成 & メール送信';
         
         try {
-            generateBtn.textContent = 'PDF生成中...';
-            generateBtn.classList.add('loading');
-            generateBtn.disabled = true;
+            if (generateBtn) {
+                generateBtn.textContent = 'PDF生成中...';
+                generateBtn.classList.add('loading');
+                generateBtn.disabled = true;
+            }
             
             // プレビューを表示してからPDF生成
             this.showPreview();
@@ -1227,9 +1230,11 @@ class OrderFormManager {
             console.error('PDF生成エラー:', error);
             alert('PDF生成中にエラーが発生しました: ' + error.message + '\n\n詳細はコンソールを確認してください。');
         } finally {
-            generateBtn.textContent = originalText;
-            generateBtn.classList.remove('loading');
-            generateBtn.disabled = false;
+            if (generateBtn) {
+                generateBtn.textContent = originalText;
+                generateBtn.classList.remove('loading');
+                generateBtn.disabled = false;
+            }
         }
     }
 
