@@ -207,20 +207,22 @@ body::before {
 }
 
 .subtitle {
-    font-size: 1.4rem;
-    color: #ffffff;
+    font-size: 1.3rem;
+    color: #c0c0c0;
     margin: 0 0 40px 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
-    font-weight: 600;
-    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 255, 255, 0.3);
-    background: rgba(0, 0, 0, 0.2);
-    padding: 15px 25px;
-    border-radius: 25px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    gap: 10px;
+    font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(192, 192, 192, 0.15) 0%, rgba(169, 169, 169, 0.15) 100%);
+    padding: 12px 35px;
+    border-radius: 30px;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(192, 192, 192, 0.25);
+    white-space: nowrap;
+    letter-spacing: 0.8px;
 }
 
 .subtitle-icon {
@@ -230,8 +232,9 @@ body::before {
 
 .subtitle-text {
     animation: textFadeIn 1s ease-out 0.5s both;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    color: #c0c0c0;
 }
 
 
@@ -1316,10 +1319,13 @@ body::before {
     }
     
     .subtitle {
-        font-size: 1.2rem;
-        flex-direction: column;
-        gap: 10px;
-        padding: 12px 20px;
+        font-size: 1.1rem;
+        flex-direction: row;
+        gap: 8px;
+        padding: 10px 25px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     
