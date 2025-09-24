@@ -6,7 +6,6 @@ class OrderFormManager {
         this.setDefaultDate();
         this.setupExistingItemRows();
         this.calculateTotals();
-        this.checkForEditMode();
     }
 
     initializeEventListeners() {
@@ -115,18 +114,6 @@ class OrderFormManager {
             console.error('resetBtn が見つかりません');
         }
 
-        // 保存して管理に登録ボタン
-        const saveAndRegisterBtn = document.getElementById('saveAndRegisterBtn');
-        if (saveAndRegisterBtn) {
-            saveAndRegisterBtn.addEventListener('click', (e) => {
-                e.preventDefault(); // フォームのデフォルト動作を防ぐ
-                console.log('保存して管理に登録ボタンがクリックされました');
-                this.registerToManagement();
-            });
-            console.log('保存して管理に登録ボタンのイベントリスナーを設定しました');
-        } else {
-            console.warn('saveAndRegisterBtn が見つかりません');
-        }
         
         // フォームのリセットイベントを防ぐ
         const orderForm = document.getElementById('orderForm');
@@ -1182,128 +1169,8 @@ class OrderFormManager {
     }
 
 
-    // 発注書データを保存
-    saveOrderToStorage(formData) {
-        console.log('=== saveOrderToStorage 開始 ===');
-        console.log('入力フォームデータ:', formData);
-        
-        try {
-            const orders = this.loadOrdersFromStorage();
-            console.log('既存の発注書数:', orders.length);
-            
-            const orderId = formData.orderId || this.generateOrderId();
-            console.log('生成されたorderId:', orderId);
-            
-            const orderData = {
-                id: orderId,
-                ...formData,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            };
-            console.log('保存する発注書データ:', orderData);
 
-            // 既存の注文を更新または新規追加
-            const existingIndex = orders.findIndex(order => order.id === orderId);
-            console.log('既存発注書のインデックス:', existingIndex);
-            
-            if (existingIndex >= 0) {
-                orders[existingIndex] = orderData;
-                console.log('既存発注書を更新');
-            } else {
-                orders.push(orderData);
-                console.log('新規発注書を追加');
-            }
 
-            localStorage.setItem('purchaseOrders', JSON.stringify(orders));
-            console.log('LocalStorageに保存完了');
-            console.log('保存後の発注書数:', orders.length);
-            console.log('=== saveOrderToStorage 完了 ===');
-            return orderId;
-        } catch (error) {
-            console.error('発注書データの保存エラー:', error);
-            return null;
-        }
-    }
-
-    // 発注書データを読み込み
-    loadOrdersFromStorage() {
-        try {
-            const saved = localStorage.getItem('purchaseOrders');
-            return saved ? JSON.parse(saved) : [];
-        } catch (error) {
-            console.error('発注書データの読み込みエラー:', error);
-            return [];
-        }
-    }
-
-    // 発注書IDを生成
-    generateOrderId() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-        return `PO-${year}${month}${day}-${random}`;
-    }
-
-    // 編集モードをチェック
-    checkForEditMode() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const editId = urlParams.get('edit');
-        const orderData = urlParams.get('data');
-
-        if (editId && orderData) {
-            try {
-                const order = JSON.parse(decodeURIComponent(orderData));
-                this.populateFormWithOrderData(order);
-                console.log('編集モードで発注書データを読み込みました:', order);
-            } catch (error) {
-                console.error('編集データの読み込みエラー:', error);
-            }
-        }
-    }
-
-    // フォームに発注書データを設定
-    populateFormWithOrderData(order) {
-        // 発注元情報
-        document.getElementById('companyName').value = order.companyName || '';
-        document.getElementById('companyCode').value = order.companyCode || '';
-        document.getElementById('companyAddress').value = order.companyAddress || '';
-        document.getElementById('companyPhone').value = order.companyPhone || '';
-        document.getElementById('companyEmail').value = order.companyEmail || '';
-        document.getElementById('staffMember').value = order.staffMember || '';
-
-        // 発注先情報
-        document.getElementById('supplierName').value = order.supplierName || '';
-        document.getElementById('supplierAddress').value = order.supplierAddress || '';
-        document.getElementById('contactPerson').value = order.contactPerson || '';
-
-        // その他情報
-        document.getElementById('orderDate').value = order.orderDate || '';
-        document.getElementById('completionMonth').value = order.completionMonth || '';
-        document.getElementById('paymentTerms').value = order.paymentTerms || '';
-        document.getElementById('remarks').value = order.remarks || '';
-
-        // 商品情報
-        if (order.items && order.items.length > 0) {
-            // 既存の商品行をクリア
-            const itemsContainer = document.getElementById('itemsContainer');
-            itemsContainer.innerHTML = '';
-
-            // 新しい商品行を追加
-            order.items.forEach((item, index) => {
-                this.addItemRow();
-                const row = itemsContainer.children[index];
-                row.querySelector('input[name="itemProjectName[]"]').value = item.projectName || '';
-                row.querySelector('input[name="itemName[]"]').value = item.name || '';
-                row.querySelector('input[name="itemQuantity[]"]').value = item.quantity || '';
-                row.querySelector('input[name="itemUnit[]"]').value = item.unit || '';
-                row.querySelector('input[name="itemPrice[]"]').value = item.unitPrice || '';
-            });
-        }
-
-        this.calculateTotals();
-    }
 
     // プレビューからPDF生成（確実版）
     async generateHighQualityPDFFromPreview() {
@@ -1452,40 +1319,6 @@ class OrderFormManager {
         }
     }
 
-    // 発注書管理に登録
-    registerToManagement() {
-        console.log('=== 発注書管理登録開始 ===');
-        
-        try {
-            const formData = this.getFormData();
-            console.log('フォームデータ取得:', formData);
-            
-            // 発注書データを保存
-            const orderId = this.saveOrderToStorage(formData);
-            console.log('保存結果 - orderId:', orderId);
-            
-            if (orderId) {
-                console.log('発注書登録成功');
-                
-                // 成功メッセージを表示
-                this.showSuccessMessage('発注書を管理システムに登録しました！');
-                
-                // プレビューを閉じる
-                this.hidePreview();
-                
-                // 発注書管理ページに移動するか確認
-                setTimeout(() => {
-                    this.showManagementPageModal();
-                }, 1000);
-            } else {
-                console.error('発注書登録失敗 - orderIdがnull');
-                this.showErrorMessage('発注書の登録に失敗しました。\nもう一度お試しください。');
-            }
-        } catch (error) {
-            console.error('発注書登録エラー:', error);
-            this.showErrorMessage('発注書の登録中にエラーが発生しました。\n' + error.message);
-        }
-    }
 
 
     // 成功メッセージ表示
