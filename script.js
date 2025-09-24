@@ -76,7 +76,7 @@ class OrderFormManager {
                         subtotalInput.value = Math.floor(subtotal);
                         
                         // 合計も更新
-                        this.calculateTotals();
+                this.calculateTotals();
                     }
                 }
             } else {
@@ -165,7 +165,7 @@ class OrderFormManager {
                 
                 // プレビュー表示
                 try {
-                    this.showPreview();
+                this.showPreview();
                 } catch (error) {
                     console.error('showPreviewエラー:', error);
                     alert('エラー: ' + error.message);
@@ -224,7 +224,7 @@ class OrderFormManager {
                 e.preventDefault();
                 console.log('メール送信ボタンがクリックされました');
                 this.sendPDFByEmail();
-            });
+        });
             console.log('メール送信ボタンのイベントリスナーを設定しました');
         } else {
             console.error('sendEmailBtn が見つかりません');
@@ -820,10 +820,10 @@ class OrderFormManager {
         console.log('=== showPreview が呼び出されました ===');
         
         try {
-            const formData = this.getFormData();
+        const formData = this.getFormData();
             console.log('フォームデータ取得完了:', formData);
-            
-            const previewContent = this.generatePreviewHTML(formData);
+        
+        const previewContent = this.generatePreviewHTML(formData);
             console.log('プレビューHTML生成完了');
             console.log('プレビューHTML（最初の200文字）:', previewContent.substring(0, 200));
             
@@ -843,7 +843,7 @@ class OrderFormManager {
             if (previewModal) {
                 previewModal.style.display = 'block';
                 console.log('プレビューモーダルを表示しました');
-            } else {
+        } else {
                 console.error('previewModal が見つかりません');
             }
             
@@ -969,7 +969,8 @@ class OrderFormManager {
                     <tr>
                         <td>${projectName}</td>
                         <td>${name}</td>
-                        <td>${quantity} ${unit}</td>
+                        <td>${quantity}</td>
+                        <td>${unit}</td>
                         <td>¥${price.toLocaleString()}</td>
                         <td>¥${itemSubtotal.toLocaleString()}</td>
                     </tr>
@@ -986,28 +987,28 @@ class OrderFormManager {
                     <div class="company-header">
                         <div class="company-logo">
                             <img src="logo.png" alt="株式会社諸鹿彩色" class="logo-image" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div class="logo-fallback">
+                        <div class="logo-fallback">
                                 <div class="logo-icon">M</div>
                                 <div class="logo-company">MOROGA</div>
-                            </div>
                         </div>
+                    </div>
                         <div class="company-info">
                             <h1>株式会社諸鹿彩色</h1>
                             <p>〒321-0111 栃木県宇都宮市川田町1048-5</p>
                             <p>TEL: 028-688-8618 | Email: info@moroga.info</p>
-                        </div>
                     </div>
+                </div>
                     <div class="order-title">
                         <h2>発注書</h2>
                         <div class="order-date">
                             <span>発注日</span>
                             <span>${data.orderDate}</span>
-                        </div>
+                    </div>
                     </div>
                 </div>
                 
                 <div class="supplier-section">
-                    <h3>発注先</h3>
+                        <h3>発注先</h3>
                     <div class="supplier-info">
                         <p><strong>${data.supplierName}</strong></p>
                         <p>${data.supplierAddress}</p>
@@ -1023,11 +1024,12 @@ class OrderFormManager {
                 <table class="items-table">
                     <thead>
                         <tr>
-                            <th>項目</th>
-                            <th>商品</th>
+                                <th>工事名</th>
+                            <th>商品名</th>
                             <th>数量</th>
-                            <th>単価</th>
-                            <th>金額</th>
+                            <th>単位</th>
+                            <th>単価（円）</th>
+                            <th>小計（円）</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1058,11 +1060,11 @@ class OrderFormManager {
                 ` : ''}
                 
                 <div class="footer-section">
-                    <p>この度はお取引いただき、誠にありがとうございます。</p>
+                            <p>この度はお取引いただき、誠にありがとうございます。</p>
                     <div class="signature">
                         <p>株式会社諸鹿彩色</p>
                         ${data.staffMember ? `<p>担当: ${data.staffMember}</p>` : ''}
-                    </div>
+                                            </div>
                 </div>
             </div>
         `;
