@@ -1179,9 +1179,9 @@ class OrderFormManager {
                 throw new Error('プレビュー要素が表示されていません');
             }
             
-            // プレビュー要素（発注書本体）のみをキャプチャ（鮮明性とサイズのバランス最適化）
+            // プレビュー要素（発注書本体）のみをキャプチャ（ロゴ鮮明化重視）
             const canvas = await html2canvas(contentElement, {
-                scale: 1.8, // 鮮明さ向上のため解像度アップ（1.2→1.8）
+                scale: 2, // ロゴの鮮明さ重視で解像度を最大に（1.8→2）
                 useCORS: true,
                 allowTaint: false,
                 backgroundColor: '#ffffff',
@@ -1190,10 +1190,18 @@ class OrderFormManager {
                 height: contentElement.offsetHeight,
                 x: 0,
                 y: 0,
-                foreignObjectRendering: true, // SVGやフォントの描画品質向上
-                letterRendering: true, // テキスト描画品質向上
-                imageTimeout: 15000, // 画像読み込み待機時間
-                removeContainer: false
+                foreignObjectRendering: true,
+                letterRendering: true,
+                imageTimeout: 15000,
+                removeContainer: false,
+                onclone: function(clonedDoc) {
+                    // クローンされたドキュメント内のロゴ画像を最適化
+                    const logos = clonedDoc.querySelectorAll('.header-logo, .footer-logo-img');
+                    logos.forEach(logo => {
+                        logo.style.imageRendering = 'crisp-edges';
+                        logo.style.filter = 'contrast(1.2) brightness(1.1) saturate(1.2)';
+                    });
+                }
             });
             
             console.log('Canvas size:', canvas.width, 'x', canvas.height);
