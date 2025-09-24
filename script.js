@@ -253,7 +253,18 @@ class OrderFormManager {
             console.error('generateAndEmailBtn が見つかりません');
         }
 
-
+        // 印刷でPDFボタン
+        const printPdfBtn = document.getElementById('printPdfBtn');
+        if (printPdfBtn) {
+            printPdfBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('印刷でPDFボタンがクリックされました');
+                this.printToPDF();
+            });
+            console.log('印刷でPDFボタンのイベントリスナーを設定しました');
+        } else {
+            console.error('printPdfBtn が見つかりません');
+        }
 
         // リセットボタン
         const resetBtn = document.getElementById('resetBtn');
@@ -1784,6 +1795,57 @@ class OrderFormManager {
         } catch (error) {
             console.error('メール送信エラー:', error);
             alert('メール送信中にエラーが発生しました: ' + error.message);
+        }
+    }
+
+    // 印刷機能を使ったPDF生成（真っ黒問題の代替案）
+    printToPDF() {
+        try {
+            // プレビューを表示
+            this.showPreview();
+            
+            // 印刷用スタイルを追加
+            const printStyle = document.createElement('style');
+            printStyle.id = 'pdf-print-style';
+            printStyle.textContent = `
+                @media print {
+                    body * { visibility: hidden; }
+                    #previewContent, #previewContent * { visibility: visible; }
+                    #previewContent { 
+                        position: absolute !important; 
+                        left: 0 !important; 
+                        top: 0 !important; 
+                        width: 100% !important;
+                    }
+                    .modal, .modal-header, .modal-footer { display: none !important; }
+                    .order-preview { 
+                        background: white !important; 
+                        color: black !important;
+                        margin: 0 !important;
+                        padding: 20px !important;
+                        box-shadow: none !important;
+                    }
+                }
+            `;
+            document.head.appendChild(printStyle);
+            
+            // 印刷ダイアログを開く
+            setTimeout(() => {
+                alert('印刷ダイアログが開きます。\n「送信先」で「PDFに保存」を選択してください。');
+                window.print();
+                
+                // 印刷後にスタイルを削除
+                setTimeout(() => {
+                    const style = document.getElementById('pdf-print-style');
+                    if (style) {
+                        style.remove();
+                    }
+                }, 2000);
+            }, 500);
+            
+        } catch (error) {
+            console.error('印刷PDF生成エラー:', error);
+            alert('印刷PDF生成中にエラーが発生しました: ' + error.message);
         }
     }
 
