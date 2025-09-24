@@ -35,6 +35,13 @@ class OrderFormManager {
             }, 100);
         }
 
+        // 工事種別ボタン
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('work-type-btn')) {
+                this.handleWorkTypeClick(e.target);
+            }
+        });
+
         // 商品削除ボタン（動的に追加される）
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('remove-item-btn')) {
@@ -511,6 +518,28 @@ class OrderFormManager {
     setDefaultDate() {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('orderDate').value = today;
+    }
+
+    handleWorkTypeClick(button) {
+        // すべてのボタンからactiveクラスを削除
+        document.querySelectorAll('.work-type-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // クリックされたボタンにactiveクラスを追加
+        button.classList.add('active');
+        
+        // 工事種別を取得
+        const workType = button.getAttribute('data-type');
+        console.log('選択された工事種別:', workType);
+        
+        // 現在の商品行の工事名フィールドに設定
+        const projectNameInputs = document.querySelectorAll('input[name="itemProjectName[]"]');
+        projectNameInputs.forEach(input => {
+            if (!input.value.trim()) {
+                input.value = workType;
+            }
+        });
     }
 
     addItemRow() {

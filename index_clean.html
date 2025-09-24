@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>発注書作成システム - 株式会社諸鹿彩色</title>
+    <title>発注書作成システム</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -107,7 +107,65 @@
                     </div>
                     
                     <div id="itemsContainer">
-                        <!-- デフォルトで3行表示 -->
+                        <!-- デフォルトで5行表示 -->
+                        <div class="item-row">
+                            <div class="form-group">
+                                <label>工事名</label>
+                                <input type="text" name="itemProjectName[]">
+                            </div>
+                            <div class="form-group">
+                                <label>商品名</label>
+                                <input type="text" name="itemName[]">
+                            </div>
+                            <div class="form-group">
+                                <label>数量</label>
+                                <input type="number" name="itemQuantity[]" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>単位</label>
+                                <input type="text" name="itemUnit[]" placeholder="単位を入力">
+                            </div>
+                            <div class="form-group">
+                                <label>単価（円）</label>
+                                <input type="number" name="itemPrice[]" min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>小計（円）</label>
+                                <input type="number" name="itemSubtotal[]" readonly>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="remove-item-btn" onclick="removeItem(this)">削除</button>
+                            </div>
+                        </div>
+                        <div class="item-row">
+                            <div class="form-group">
+                                <label>工事名</label>
+                                <input type="text" name="itemProjectName[]">
+                            </div>
+                            <div class="form-group">
+                                <label>商品名</label>
+                                <input type="text" name="itemName[]">
+                            </div>
+                            <div class="form-group">
+                                <label>数量</label>
+                                <input type="number" name="itemQuantity[]" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>単位</label>
+                                <input type="text" name="itemUnit[]" placeholder="単位を入力">
+                            </div>
+                            <div class="form-group">
+                                <label>単価（円）</label>
+                                <input type="number" name="itemPrice[]" min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>小計（円）</label>
+                                <input type="number" name="itemSubtotal[]" readonly>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="remove-item-btn" onclick="removeItem(this)">削除</button>
+                            </div>
+                        </div>
                         <div class="item-row">
                             <div class="form-group">
                                 <label>工事名</label>
@@ -278,3 +336,5 @@
     <script src="script.js"></script>
 </body>
 </html>
+
+
