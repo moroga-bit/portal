@@ -1156,11 +1156,17 @@ class OrderFormManager {
             }
             
             const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4',
+                compress: true, // PDF圧縮を有効化
+                precision: 2 // 精度を下げてファイルサイズ削減
+            });
             
-            // プレビュー要素（発注書本体）のみをキャプチャ
+            // プレビュー要素（発注書本体）のみをキャプチャ（軽量化設定）
             const canvas = await html2canvas(contentElement, {
-                scale: 2, // 高解像度でキャプチャ
+                scale: 1.5, // 解像度を下げてファイルサイズ削減（2→1.5）
                 useCORS: true,
                 allowTaint: true,
                 backgroundColor: '#ffffff',
@@ -1168,13 +1174,22 @@ class OrderFormManager {
                 height: contentElement.scrollHeight,
                 scrollX: 0,
                 scrollY: 0,
-                windowWidth: 1200,
-                windowHeight: 800
+                windowWidth: 800, // ウィンドウサイズを縮小（1200→800）
+                windowHeight: 600, // ウィンドウサイズを縮小（800→600）
+                removeContainer: true, // 不要な要素を削除
+                ignoreElements: function(element) {
+                    // 不要な要素をスキップしてファイルサイズ削減
+                    return element.classList && (
+                        element.classList.contains('modal') ||
+                        element.classList.contains('btn') ||
+                        element.classList.contains('floating-shapes')
+                    );
+                }
             });
             
             console.log('Canvas size:', canvas.width, 'x', canvas.height);
             
-            const imgData = canvas.toDataURL('image/png', 1.0);
+            const imgData = canvas.toDataURL('image/jpeg', 0.85); // PNG→JPEG、品質85%でファイルサイズ削減
             const pageWidth = pdf.internal.pageSize.getWidth(); // 210mm
             const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
             

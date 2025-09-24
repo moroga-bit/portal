@@ -824,10 +824,11 @@ body::before {
 .header-main {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 30px 40px 25px 40px;
+    align-items: stretch;
+    padding: 25px 40px;
     background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
     border-bottom: 1px solid #e9ecef;
+    min-height: 140px;
 }
 
 .company-brand {
@@ -879,6 +880,9 @@ body::before {
 
 .company-details {
     margin-left: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .company-name {
@@ -915,25 +919,29 @@ body::before {
 .document-header {
     text-align: right;
     padding-left: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
 }
 
 .document-title {
-    font-size: 3.2rem;
+    font-size: 3rem;
     color: #2c3e50;
     font-weight: 900;
-    margin: 0 0 3px 0;
+    margin: 0;
     letter-spacing: 2px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    line-height: 1;
+    line-height: 0.9;
 }
 
 .document-subtitle {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #6c757d;
     font-weight: 600;
     letter-spacing: 2px;
     text-transform: uppercase;
-    margin: 0;
+    margin: 2px 0 0 0;
     line-height: 1;
 }
 
@@ -1225,6 +1233,26 @@ body::before {
     color: #2c3e50;
     font-weight: bold;
     font-size: 1.1rem;
+}
+
+/* PDF用軽量化設定 */
+@media print {
+    .order-preview * {
+        box-shadow: none !important;
+        text-shadow: none !important;
+        background-image: none !important;
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    .pdf-header {
+        box-shadow: none !important;
+    }
+    
+    .info-item:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
 }
 
 /* アニメーション */
