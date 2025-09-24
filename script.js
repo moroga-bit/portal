@@ -125,18 +125,28 @@ class OrderFormManager {
             }
         }, true); // useCapture=true でより確実にキャッチ
 
-        // プレビューボタン
+        // プレビューボタン（シンプルテスト）
         const previewBtn = document.getElementById('previewBtn');
         console.log('プレビューボタン要素:', previewBtn);
         if (previewBtn) {
-            previewBtn.addEventListener('click', () => {
-                console.log('プレビューボタンがクリックされました');
-                console.log('this:', this);
-                this.showPreview();
+            previewBtn.addEventListener('click', (event) => {
+                console.log('プレビューボタンがクリックされました!');
+                event.preventDefault();
+                
+                // 簡単なテスト
+                alert('プレビューボタンが動作しています！');
+                
+                // プレビュー表示
+                try {
+                    this.showPreview();
+                } catch (error) {
+                    console.error('showPreviewエラー:', error);
+                    alert('エラー: ' + error.message);
+                }
             });
             console.log('プレビューボタンのイベントリスナーを設定しました');
         } else {
-            console.error('previewBtn が見つかりません');
+            console.error('プレビューボタンが見つかりません！HTMLを確認してください');
         }
 
         // プレビュー閉じるボタン
@@ -1616,11 +1626,33 @@ function removeItem(button) {
 // ページ読み込み時に初期化
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOMContentLoaded - 初期化開始');
+    
+    // プレビューボタンの存在確認
+    const previewBtn = document.getElementById('previewBtn');
+    console.log('DOMContentLoaded時点でのプレビューボタン:', previewBtn);
+    
     try {
         window.orderFormManager = new OrderFormManager();
         console.log('OrderFormManager 初期化完了');
+        
+        // 初期化後にもう一度ボタンを確認
+        setTimeout(() => {
+            const previewBtnAfter = document.getElementById('previewBtn');
+            console.log('初期化後のプレビューボタン:', previewBtnAfter);
+            if (previewBtnAfter && !previewBtnAfter.onclick) {
+                console.log('手動でプレビューボタンにイベントを追加');
+                previewBtnAfter.addEventListener('click', () => {
+                    console.log('手動イベント: プレビューボタンクリック');
+                    if (window.orderFormManager) {
+                        window.orderFormManager.showPreview();
+                    }
+                });
+            }
+        }, 500);
+        
     } catch (error) {
         console.error('OrderFormManager 初期化エラー:', error);
+        alert('システム初期化エラー: ' + error.message);
     }
 });
 
