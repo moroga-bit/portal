@@ -1235,7 +1235,22 @@ body::before {
     font-size: 1.1rem;
 }
 
-/* PDF用軽量化設定 */
+/* PDF用最適化設定 */
+.order-preview {
+    /* フォント描画品質向上 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "liga", "kern";
+}
+
+.order-preview * {
+    /* 全要素でフォント品質向上 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* PDF生成時の軽量化 */
 @media print {
     .order-preview * {
         box-shadow: none !important;

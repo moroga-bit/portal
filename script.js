@@ -162,7 +162,7 @@ class OrderFormManager {
                 
                 // プレビュー表示
                 try {
-                    this.showPreview();
+                this.showPreview();
                 } catch (error) {
                     console.error('showPreviewエラー:', error);
                     alert('プレビュー表示中にエラーが発生しました: ' + error.message);
@@ -1014,8 +1014,8 @@ class OrderFormManager {
                                 <div class="header-logo-fallback">
                                     <div class="header-logo-icon">M</div>
                                     <div class="header-logo-text">MOROGA</div>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
                             <div class="company-details">
                                 <h1 class="company-name">株式会社諸鹿彩色</h1>
                                 <div class="company-contact">
@@ -1027,9 +1027,9 @@ class OrderFormManager {
                         <div class="document-header">
                             <h2 class="document-title">発注書</h2>
                             <div class="document-subtitle">ORDER FORM</div>
-                        </div>
                     </div>
-                    
+                </div>
+                
                     <div class="order-info-section">
                         <div class="info-grid">
                             <div class="info-item date-item">
@@ -1037,7 +1037,7 @@ class OrderFormManager {
                                 <div class="info-content">
                                     <span class="info-label">発注日</span>
                                     <span class="info-value">${data.orderDate}</span>
-                                </div>
+                    </div>
                             </div>
                             <div class="info-item completion-item">
                                 <span class="info-icon">🏗️</span>
@@ -1065,7 +1065,7 @@ class OrderFormManager {
                 </div>
                 
                 <div class="supplier-section">
-                    <h3>発注先</h3>
+                        <h3>発注先</h3>
                     <div class="supplier-info">
                         <p><strong>${data.supplierName}</strong></p>
                         <p>${data.supplierAddress}</p>
@@ -1113,17 +1113,17 @@ class OrderFormManager {
                 
                 <div class="pdf-footer">
                     <div class="footer-content">
-                        <div class="footer-logo">
-                            <img src="logo.png" alt="株式会社諸鹿彩色" class="footer-logo-img" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="footer-logo">
+                        <img src="logo.png" alt="株式会社諸鹿彩色" class="footer-logo-img" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <div class="footer-logo-fallback">
                                 <div class="footer-logo-icon">M</div>
-                            </div>
                         </div>
-                        <div class="footer-info">
+                    </div>
+                    <div class="footer-info">
                             <p class="footer-thanks">この度はお取引いただき、誠にありがとうございます。</p>
                             <p class="footer-company">株式会社諸鹿彩色</p>
                         </div>
-                    </div>
+                                            </div>
                 </div>
             </div>
         `;
@@ -1179,22 +1179,26 @@ class OrderFormManager {
                 throw new Error('プレビュー要素が表示されていません');
             }
             
-            // プレビュー要素（発注書本体）のみをキャプチャ（安全な設定）
+            // プレビュー要素（発注書本体）のみをキャプチャ（鮮明性とサイズのバランス最適化）
             const canvas = await html2canvas(contentElement, {
-                scale: 1.2, // より軽量な設定
+                scale: 1.8, // 鮮明さ向上のため解像度アップ（1.2→1.8）
                 useCORS: true,
-                allowTaint: false, // より安全な設定
+                allowTaint: false,
                 backgroundColor: '#ffffff',
-                logging: false, // ログを無効化してパフォーマンス向上
+                logging: false,
                 width: contentElement.offsetWidth,
                 height: contentElement.offsetHeight,
                 x: 0,
-                y: 0
+                y: 0,
+                foreignObjectRendering: true, // SVGやフォントの描画品質向上
+                letterRendering: true, // テキスト描画品質向上
+                imageTimeout: 15000, // 画像読み込み待機時間
+                removeContainer: false
             });
             
             console.log('Canvas size:', canvas.width, 'x', canvas.height);
             
-            const imgData = canvas.toDataURL('image/jpeg', 0.85); // PNG→JPEG、品質85%でファイルサイズ削減
+            const imgData = canvas.toDataURL('image/jpeg', 0.92); // JPEG品質92%で鮮明さ向上（85%→92%）
             const pageWidth = pdf.internal.pageSize.getWidth(); // 210mm
             const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
             
