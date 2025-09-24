@@ -1800,7 +1800,12 @@ class OrderFormManager {
 
     // 印刷機能を使ったPDF生成（真っ黒問題の代替案）
     printToPDF() {
+        console.log('印刷PDF機能を開始');
+        
         try {
+            // まずアラートでテスト
+            alert('印刷PDF機能がクリックされました！\n次に印刷ダイアログを開きます。');
+            
             // プレビューを表示
             this.showPreview();
             
@@ -1816,6 +1821,8 @@ class OrderFormManager {
                         left: 0 !important; 
                         top: 0 !important; 
                         width: 100% !important;
+                        background: white !important;
+                        color: black !important;
                     }
                     .modal, .modal-header, .modal-footer { display: none !important; }
                     .order-preview { 
@@ -1824,6 +1831,7 @@ class OrderFormManager {
                         margin: 0 !important;
                         padding: 20px !important;
                         box-shadow: none !important;
+                        border: none !important;
                     }
                 }
             `;
@@ -1831,7 +1839,7 @@ class OrderFormManager {
             
             // 印刷ダイアログを開く
             setTimeout(() => {
-                alert('印刷ダイアログが開きます。\n「送信先」で「PDFに保存」を選択してください。');
+                console.log('印刷ダイアログを開きます');
                 window.print();
                 
                 // 印刷後にスタイルを削除
@@ -1839,9 +1847,10 @@ class OrderFormManager {
                     const style = document.getElementById('pdf-print-style');
                     if (style) {
                         style.remove();
+                        console.log('印刷用スタイルを削除しました');
                     }
-                }, 2000);
-            }, 500);
+                }, 3000);
+            }, 1000);
             
         } catch (error) {
             console.error('印刷PDF生成エラー:', error);
