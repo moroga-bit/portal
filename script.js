@@ -1130,17 +1130,35 @@ class OrderFormManager {
             }
             
             const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4'); // 基本設定
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm', 
+                format: 'a4',
+                compress: true, // 圧縮有効
+                precision: 3 // 適度な精度で品質とサイズのバランス
+            });
             
             // 要素が表示されているか確認
             if (contentElement.offsetWidth === 0 || contentElement.offsetHeight === 0) {
                 throw new Error('プレビュー要素が表示されていません');
             }
             
-            // プレビュー要素（発注書本体）のみをキャプチャ（最もシンプルな設定）
+            // プレビュー要素（発注書本体）のみをキャプチャ（300KB最適化設定）
             const canvas = await html2canvas(contentElement, {
-                scale: 1, // 基本解像度
-                backgroundColor: '#ffffff'
+                scale: 1.3, // 300KBに最適化された解像度
+                backgroundColor: '#ffffff',
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                removeContainer: true,
+                imageTimeout: 10000,
+                ignoreElements: function(element) {
+                    // 不要な装飾要素をスキップしてサイズ削減
+                    return element.classList && (
+                        element.classList.contains('floating-shapes') ||
+                        element.classList.contains('shape')
+                    );
+                }
             });
             
             console.log('Canvas size:', canvas.width, 'x', canvas.height);
@@ -1150,7 +1168,7 @@ class OrderFormManager {
                 throw new Error('キャンバスの作成に失敗しました');
             }
             
-            const imgData = canvas.toDataURL('image/png'); // PNG形式で確実に表示
+            const imgData = canvas.toDataURL('image/jpeg', 0.75); // JPEG 75%品質で300KB程度に最適化
             
             // 画像データが正常に作成されたかチェック
             if (!imgData || imgData === 'data:,') {
@@ -1178,14 +1196,20 @@ class OrderFormManager {
             
             const yPosition = (pageHeight - imgHeight) / 2; // 縦方向も中央寄せ（上下に余白）
 
-            // 1ページにフィットして配置（はみ出しなし）
-            pdf.addImage(imgData, 'PNG', xPosition, yPosition, imgWidth, imgHeight);
+            // 1ページにフィットして配置（JPEG圧縮で300KB最適化）
+            pdf.addImage(imgData, 'JPEG', xPosition, yPosition, imgWidth, imgHeight, '', 'MEDIUM');
             
             // PDF保存
             const fileName = `発注書_${new Date().toISOString().split('T')[0]}.pdf`;
+            
+            // PDFサイズを確認
+            const pdfSize = pdf.output('blob').size;
+            const sizeKB = Math.round(pdfSize / 1024);
+            console.log('PDFファイルサイズ:', sizeKB + 'KB');
+            
             pdf.save(fileName);
             
-            console.log('PDF生成完了:', fileName);
+            console.log('PDF生成完了:', fileName, '(サイズ:', sizeKB + 'KB)');
             
             // PDF生成成功時にメール送信ボタンを表示
             const sendEmailBtn = document.getElementById('sendEmailBtn');
