@@ -52,11 +52,14 @@ class OrderFormManager {
 
         // プレビューボタン
         const previewBtn = document.getElementById('previewBtn');
+        console.log('プレビューボタン要素:', previewBtn);
         if (previewBtn) {
             previewBtn.addEventListener('click', () => {
                 console.log('プレビューボタンがクリックされました');
+                console.log('this:', this);
                 this.showPreview();
             });
+            console.log('プレビューボタンのイベントリスナーを設定しました');
         } else {
             console.error('previewBtn が見つかりません');
         }
@@ -71,6 +74,23 @@ class OrderFormManager {
         } else {
             console.error('closePreviewBtn が見つかりません');
         }
+
+        // プレビューモーダルのバツボタン
+        document.addEventListener('click', (e) => {
+            if (e.target && e.target.classList.contains('close')) {
+                console.log('プレビューのバツボタンがクリックされました');
+                this.hidePreview();
+            }
+        });
+
+        // モーダル背景クリックで閉じる
+        document.addEventListener('click', (e) => {
+            const previewModal = document.getElementById('previewModal');
+            if (e.target === previewModal) {
+                console.log('モーダル背景がクリックされました');
+                this.hidePreview();
+            }
+        });
 
         // プレビュー内のPDF生成ボタン
         const generatePdfBtn = document.getElementById('generatePdfBtn');
@@ -628,24 +648,47 @@ class OrderFormManager {
     }
 
     showPreview() {
-        const formData = this.getFormData();
-        const previewContent = this.generatePreviewHTML(formData);
+        console.log('=== showPreview が呼び出されました ===');
         
-        const previewModal = document.getElementById('previewModal');
-        const previewContentDiv = document.getElementById('previewContent');
-        
-        if (previewContentDiv) {
-            previewContentDiv.innerHTML = previewContent;
-        }
-        
-        if (previewModal) {
-            previewModal.style.display = 'block';
-        }
-        
-        // プレビュー表示時はメール送信ボタンを非表示にする
-        const sendEmailBtn = document.getElementById('sendEmailBtn');
-        if (sendEmailBtn) {
-            sendEmailBtn.style.display = 'none';
+        try {
+            const formData = this.getFormData();
+            console.log('フォームデータ取得完了:', formData);
+            
+            const previewContent = this.generatePreviewHTML(formData);
+            console.log('プレビューHTML生成完了');
+            console.log('プレビューHTML（最初の200文字）:', previewContent.substring(0, 200));
+            
+            const previewModal = document.getElementById('previewModal');
+            const previewContentDiv = document.getElementById('previewContent');
+            
+            console.log('previewModal要素:', previewModal);
+            console.log('previewContentDiv要素:', previewContentDiv);
+            
+            if (previewContentDiv) {
+                previewContentDiv.innerHTML = previewContent;
+                console.log('プレビューコンテンツを設定しました');
+            } else {
+                console.error('previewContentDiv が見つかりません');
+            }
+            
+            if (previewModal) {
+                previewModal.style.display = 'block';
+                console.log('プレビューモーダルを表示しました');
+            } else {
+                console.error('previewModal が見つかりません');
+            }
+            
+            // プレビュー表示時はメール送信ボタンを非表示にする
+            const sendEmailBtn = document.getElementById('sendEmailBtn');
+            if (sendEmailBtn) {
+                sendEmailBtn.style.display = 'none';
+            }
+            
+            console.log('showPreview 処理完了');
+            
+        } catch (error) {
+            console.error('showPreview でエラーが発生しました:', error);
+            alert('プレビュー表示中にエラーが発生しました: ' + error.message);
         }
     }
     
