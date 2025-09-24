@@ -981,26 +981,34 @@ class OrderFormManager {
         return `
             <div class="order-preview">
                 <div class="header-section">
-                    <div class="company-header">
-                        <div class="company-logo">
-                            <img src="logo.png" alt="株式会社諸鹿彩色" class="logo-image" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="logo-fallback">
-                                <div class="logo-icon">M</div>
-                                <div class="logo-company">MOROGA</div>
+                    <div class="pdf-header-top">
+                        <div class="company-logo-large">
+                            <img src="logo.png" alt="株式会社諸鹿彩色" class="logo-image-large" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="logo-fallback-large">
+                                <div class="logo-icon-large">M</div>
+                                <div class="logo-company-large">MOROGA</div>
+                                <div class="logo-subtitle-large">株式会社諸鹿彩色</div>
+                            </div>
+                        </div>
+                        <div class="order-title-large">
+                            <h1>発注書</h1>
+                            <div class="order-date-large">
+                                <span class="date-label">発注日</span>
+                                <span class="date-value">${data.orderDate}</span>
+                            </div>
                         </div>
                     </div>
-                        <div class="company-info">
-                            <h1>株式会社諸鹿彩色</h1>
-                            <p>〒321-0111 栃木県宇都宮市川田町1048-5</p>
-                            <p>TEL: 028-688-8618 | Email: info@moroga.info</p>
-                    </div>
-                </div>
-                    <div class="order-title">
-                        <h2>発注書</h2>
-                        <div class="order-date">
-                            <span>発注日</span>
-                            <span>${data.orderDate}</span>
-                    </div>
+                    
+                    <div class="company-details">
+                        <div class="company-info-section">
+                            <h2>発注元</h2>
+                            <div class="company-data">
+                                <p class="company-name">${data.companyName}</p>
+                                <p>〒321-0111 栃木県宇都宮市川田町1048-5</p>
+                                <p>TEL: 028-688-8618 | Email: info@moroga.info</p>
+                                ${data.staffMember ? `<p class="staff-name">担当: ${data.staffMember}</p>` : ''}
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -1643,6 +1651,14 @@ class OrderFormManager {
     // メール送信機能
     async sendPDFByEmail() {
         try {
+            console.log('メール送信機能を開始');
+            
+            // PDF生成チェック
+            if (!this.lastGeneratedPDF) {
+                alert('先にPDFを生成してください。\n「PDF生成」ボタンをクリックしてからメール送信を行ってください。');
+                return;
+            }
+            
             const data = this.getFormData();
             
             // メール件名と本文を作成
@@ -1670,7 +1686,14 @@ Email: info@moroga.info
             
             // Google Workspace連携が利用可能かチェック
             if (this.isGoogleWorkspaceAvailable()) {
-                await this.sendWithGoogleWorkspace();
+                try {
+                    await this.sendWithGoogleWorkspace();
+                } catch (workspaceError) {
+                    console.log('Google Workspace連携が失敗したため、標準メーラーを使用します:', workspaceError);
+                    // Google Workspace連携が失敗した場合、標準メーラーを使用
+                    window.open(mailtoLink);
+                    alert('Google Workspace連携でエラーが発生しました。\n通常のメーラーを起動しました。\n生成されたPDFファイルを手動で添付してください。');
+                }
             } else {
                 // 標準のメーラーを起動
                 window.open(mailtoLink);
@@ -1686,7 +1709,19 @@ Email: info@moroga.info
     // Google Workspaceが利用可能かチェック
     isGoogleWorkspaceAvailable() {
         // Google APIs Client LibraryとGoogle設定が読み込まれているかチェック
-        return typeof gapi !== 'undefined' && typeof GoogleWorkspaceIntegration !== 'undefined';
+        const gapiAvailable = typeof gapi !== 'undefined';
+        const configAvailable = typeof GoogleWorkspaceIntegration !== 'undefined';
+        
+        console.log('Google API利用可能性チェック:', {
+            gapi: gapiAvailable,
+            GoogleWorkspaceIntegration: configAvailable
+        });
+        
+        // 現在は設定が不完全なため、常にfalseを返して標準メーラーを使用
+        return false;
+        
+        // 将来的にGoogle Workspace連携を有効にする場合はこちらを使用
+        // return gapiAvailable && configAvailable;
     }
 
     // Google Workspace連携でのメール送信
