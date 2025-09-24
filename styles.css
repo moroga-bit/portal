@@ -768,6 +768,269 @@ body::before {
     flex-wrap: wrap;
 }
 
+/* プレビュー用スタイル */
+.order-preview {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 40px;
+    font-family: 'Segoe UI', 'BIZ UDGothic', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #667eea;
+}
+
+.order-logo {
+    display: flex;
+    align-items: center;
+}
+
+.preview-logo {
+    max-height: 60px;
+    max-width: 200px;
+}
+
+.logo-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: 800;
+    color: #667eea;
+    letter-spacing: 2px;
+}
+
+.logo-subtitle {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+}
+
+.order-title-section {
+    text-align: right;
+}
+
+.order-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.order-number {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.company-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+.company-section h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #667eea;
+}
+
+.company-section p {
+    margin: 8px 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.order-details {
+    background: #f8f9ff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border-left: 4px solid #667eea;
+}
+
+.order-details p {
+    margin: 5px 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.items-table th {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.items-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 14px;
+}
+
+.items-table tr:nth-child(even) {
+    background: #f8f9ff;
+}
+
+.items-table tr:hover {
+    background: #e3f2fd;
+}
+
+.total-section-preview {
+    background: #f8f9ff;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    border: 2px solid #e9ecef;
+}
+
+.total-row-preview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.total-final-preview {
+    border-top: 2px solid #667eea;
+    margin-top: 15px;
+    padding-top: 15px;
+    font-size: 20px;
+    color: #2c3e50;
+}
+
+.remarks-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #fff3cd;
+    border-radius: 8px;
+    border-left: 4px solid #ffc107;
+}
+
+.remarks-section h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #856404;
+    margin-bottom: 10px;
+}
+
+.remarks-section p {
+    font-size: 14px;
+    color: #856404;
+    margin: 0;
+}
+
+.order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid #e9ecef;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+}
+
+.footer-logo-img {
+    max-height: 40px;
+    max-width: 150px;
+}
+
+.footer-info {
+    text-align: right;
+}
+
+.footer-contact p {
+    margin: 3px 0;
+    font-size: 12px;
+    color: #666;
+}
+
+.footer-signature {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.footer-signature p {
+    font-size: 14px;
+    color: #333;
+    margin: 5px 0;
+    font-style: italic;
+}
+
+.stamp-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9ff;
+    border-radius: 10px;
+    border: 2px dashed #667eea;
+}
+
+.stamp-image {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.stamp-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.stamp-text {
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.2;
+}
+
 /* アニメーション */
 @keyframes fadeIn {
     from { opacity: 0; }
