@@ -598,9 +598,9 @@ class OrderFormManager {
         const taxElement = document.getElementById('tax');
         const totalElement = document.getElementById('total');
         
-        if (subtotalElement) subtotalElement.textContent = `¥${subtotal.toLocaleString()}`;
-        if (taxElement) taxElement.textContent = `¥${tax.toLocaleString()}`;
-        if (totalElement) totalElement.textContent = `¥${total.toLocaleString()}`;
+        if (subtotalElement) subtotalElement.textContent = subtotal.toLocaleString();
+        if (taxElement) taxElement.textContent = tax.toLocaleString();
+        if (totalElement) totalElement.textContent = total.toLocaleString();
         
         // 商品合計を表示
         this.updateItemsTotal(subtotal);
@@ -610,7 +610,7 @@ class OrderFormManager {
     updateItemsTotal(total) {
         const itemsTotalElement = document.getElementById('itemsTotal');
         if (itemsTotalElement) {
-            itemsTotalElement.textContent = `¥${total.toLocaleString()}`;
+            itemsTotalElement.textContent = total.toLocaleString();
         }
     }
 
