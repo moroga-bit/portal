@@ -745,40 +745,28 @@ class OrderFormManager {
         
         return `
             <div class="order-preview">
-                <div class="order-header">
-                    <div class="order-logo">
-                        <img src="logo.png" alt="株式会社諸鹿彩色" class="preview-logo" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="logo-fallback">
-                            <div class="logo-text">MOROGA</div>
-                            <div class="logo-subtitle">株式会社諸鹿彩色</div>
+                <div class="header-section">
+                    <div class="company-header">
+                        <h1>株式会社諸鹿彩色</h1>
+                        <p>〒321-0111 栃木県宇都宮市川田町1048-5</p>
+                        <p>TEL: 028-688-8618 | Email: info@moroga.info</p>
                         </div>
-                    </div>
-                    <div class="order-title-section">
-                        <div class="order-title">発注書</div>
-                        <div class="order-number">発注書番号: ${orderNumber}</div>
+                    <div class="order-title">
+                        <h2>発注書</h2>
+                        <p>発注日: ${data.orderDate}</p>
                     </div>
                 </div>
                 
-                <div class="company-info">
-                    <div class="company-section">
-                        <h3>発注元</h3>
-                        <p><strong>${data.companyName}</p>
-                        <p>Invoice: ${data.companyCode}</p>
-                        <p>${data.companyAddress}</p>
-                        <p>${data.companyPhone}</p>
-                        <p>Email: ${data.companyEmail}</p>
-                            ${data.staffMember ? `<p><strong>担当:</strong> ${data.staffMember}</p>` : ''}
-                    </div>
-                    <div class="company-section">
+                <div class="supplier-section">
                         <h3>発注先</h3>
+                    <div class="supplier-info">
                         <p><strong>${data.supplierName}</strong></p>
                         <p>${data.supplierAddress}</p>
                         ${data.contactPerson ? `<p>担当者: ${data.contactPerson}</p>` : ''}
                     </div>
                 </div>
                 
-                <div class="order-details">
-                    <p><strong>発注日:</strong> ${data.orderDate}</p>
+                <div class="order-info">
                     ${data.completionMonth ? `<p><strong>工事完了月:</strong> ${data.completionMonth}</p>` : ''}
                     <p><strong>支払条件:</strong> ${data.paymentTerms}</p>
                 </div>
@@ -798,80 +786,34 @@ class OrderFormManager {
                     </tbody>
                 </table>
                 
-                <div class="total-section-preview">
-                    <div class="total-row-preview">
+                <div class="total-section">
+                    <div class="total-row">
                         <span>小計:</span>
                         <span>¥${subtotal.toLocaleString()}</span>
                     </div>
-                    <div class="total-row-preview">
+                    <div class="total-row">
                         <span>消費税 (10%):</span>
                         <span>¥${tax.toLocaleString()}</span>
                     </div>
-                    <div class="total-row-preview total-final-preview">
-                        <span>合計金額:</span>
-                        <span>¥${total.toLocaleString()}</span>
+                    <div class="total-row total-final">
+                        <span><strong>合計金額:</strong></span>
+                        <span><strong>¥${total.toLocaleString()}</strong></span>
                     </div>
                 </div>
                 
                 ${data.remarks ? `
-                    <div class="remarks-section">
+                    <div class="remarks">
                         <h3>備考</h3>
                         <p>${data.remarks}</p>
                     </div>
                 ` : ''}
                 
-                <div class="order-footer">
-                    <div class="footer-logo">
-                        <img src="logo.png" alt="株式会社諸鹿彩色" class="footer-logo-img" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="logo-fallback">
-                            <div class="logo-text">MOROGA</div>
-                            <div class="logo-subtitle">株式会社諸鹿彩色</div>
-                        </div>
-                    </div>
-                    <div class="footer-info">
-                        <div class="footer-contact">
-                            <p>〒321-0111 栃木県宇都宮市川田町1048-5</p>
-                            <p>TEL: 028-688-8618  FAX: 028-688-0668 | Email: info@moroga.info</p>
-                        </div>
-                        <div class="footer-signature">
+                <div class="footer-section">
                             <p>この度はお取引いただき、誠にありがとうございます。</p>
-                            ${(() => {
-                                // 担当者データを正規化（前後の空白を除去）
-                                const staffMember = data.staffMember ? data.staffMember.trim() : '';
-                                
-                                console.log('=== ハンコ表示デバッグ ===');
-                                console.log('元の担当者データ:', JSON.stringify(data.staffMember));
-                                console.log('正規化後の担当者データ:', JSON.stringify(staffMember));
-                                console.log('諸鹿大介との比較:', staffMember === '諸鹿大介');
-                                console.log('奥山竜矢との比較:', staffMember === '奥山竜矢');
-                                
-                                if (staffMember === '諸鹿大介') {
-                                    console.log('→ 諸鹿大介のハンコを表示');
-                                    return `
-                                        <div class="signature-stamp">
-                                            <img src="stamp_moroga.png" alt="諸鹿大介印" class="stamp-image" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                            <div class="stamp-fallback">
-                                                <div class="stamp-text">諸鹿大介</div>
+                    <div class="signature">
+                        <p>株式会社諸鹿彩色</p>
+                        ${data.staffMember ? `<p>担当: ${data.staffMember}</p>` : ''}
                                             </div>
-                                        </div>
-                                    `;
-                                } else if (staffMember === '奥山竜矢') {
-                                    console.log('→ 奥山竜矢のハンコを表示');
-                                    return `
-                                        <div class="signature-stamp">
-                                            <img src="stamp_okuyama.png" alt="奥山竜矢印" class="stamp-image" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                            <div class="stamp-fallback">
-                                                <div class="stamp-text">奥山竜矢</div>
-                                            </div>
-                                        </div>
-                                    `;
-                                } else {
-                                    console.log('→ 担当者が選択されていません:', staffMember);
-                                    return '';
-                                }
-                            })()}
-                        </div>
-                    </div>
                 </div>
             </div>
         `;

@@ -773,262 +773,182 @@ body::before {
     max-width: 800px;
     margin: 0 auto;
     background: white;
-    padding: 40px;
-    font-family: 'Segoe UI', 'BIZ UDGothic', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 30px;
+    font-family: 'Noto Sans JP', sans-serif;
     line-height: 1.6;
     color: #333;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.order-header {
+.header-section {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 3px solid #667eea;
-}
-
-.order-logo {
-    display: flex;
-    align-items: center;
-}
-
-.preview-logo {
-    max-height: 60px;
-    max-width: 200px;
-}
-
-.logo-fallback {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.logo-text {
-    font-size: 24px;
-    font-weight: 800;
-    color: #667eea;
-    letter-spacing: 2px;
-}
-
-.logo-subtitle {
-    font-size: 12px;
-    color: #666;
-    margin-top: 2px;
-}
-
-.order-title-section {
-    text-align: right;
-}
-
-.order-title {
-    font-size: 32px;
-    font-weight: 800;
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
-
-.order-number {
-    font-size: 14px;
-    color: #666;
-    font-weight: 500;
-}
-
-.company-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    margin-bottom: 30px;
-}
-
-.company-section h3 {
-    font-size: 18px;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 15px;
-    padding-bottom: 5px;
     border-bottom: 2px solid #667eea;
 }
 
-.company-section p {
-    margin: 8px 0;
-    font-size: 14px;
-    line-height: 1.5;
+.company-header h1 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-weight: bold;
 }
 
-.order-details {
-    background: #f8f9ff;
+.company-header p {
+    margin: 3px 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.order-title {
+    text-align: right;
+}
+
+.order-title h2 {
+    font-size: 2.2rem;
+    color: #667eea;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.order-title p {
+    color: #666;
+    font-size: 1rem;
+}
+
+.supplier-section {
+    margin-bottom: 25px;
     padding: 20px;
+    background: #f8f9fa;
     border-radius: 8px;
-    margin-bottom: 30px;
     border-left: 4px solid #667eea;
 }
 
-.order-details p {
+.supplier-section h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.supplier-info p {
     margin: 5px 0;
-    font-size: 14px;
-    font-weight: 500;
+    color: #444;
+}
+
+.order-info {
+    margin-bottom: 25px;
+    padding: 15px;
+    background: #f0f7ff;
+    border-radius: 8px;
+}
+
+.order-info p {
+    margin: 5px 0;
+    color: #555;
 }
 
 .items-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 30px;
-    background: white;
+    margin-bottom: 25px;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .items-table th {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #667eea;
     color: white;
-    padding: 15px 12px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 14px;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.9rem;
 }
 
 .items-table td {
-    padding: 12px;
-    border-bottom: 1px solid #e9ecef;
-    font-size: 14px;
+    padding: 10px 8px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    color: #333;
 }
 
-.items-table tr:nth-child(even) {
-    background: #f8f9ff;
+.items-table tbody tr:nth-child(even) {
+    background: #f8f9fa;
 }
 
-.items-table tr:hover {
-    background: #e3f2fd;
-}
-
-.total-section-preview {
-    background: #f8f9ff;
-    padding: 25px;
-    border-radius: 10px;
-    margin-bottom: 30px;
-    border: 2px solid #e9ecef;
-}
-
-.total-row-preview {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.total-final-preview {
-    border-top: 2px solid #667eea;
-    margin-top: 15px;
-    padding-top: 15px;
-    font-size: 20px;
-    color: #2c3e50;
-}
-
-.remarks-section {
-    margin-bottom: 30px;
+.total-section {
+    background: #f8f9fa;
     padding: 20px;
-    background: #fff3cd;
     border-radius: 8px;
-    border-left: 4px solid #ffc107;
+    margin-bottom: 25px;
+    border: 1px solid #e0e0e0;
 }
 
-.remarks-section h3 {
-    font-size: 16px;
-    font-weight: 700;
-    color: #856404;
-    margin-bottom: 10px;
-}
-
-.remarks-section p {
-    font-size: 14px;
-    color: #856404;
-    margin: 0;
-}
-
-.order-footer {
+.total-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-top: 40px;
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.total-row:last-child {
+    border-bottom: none;
+}
+
+.total-final {
+    font-size: 1.2rem;
+    color: #2c3e50;
+    border-top: 2px solid #667eea !important;
+    padding-top: 15px !important;
+    margin-top: 10px;
+}
+
+.remarks {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: #fff9e6;
+    border-radius: 8px;
+    border-left: 4px solid #ffa726;
+}
+
+.remarks h3 {
+    color: #f57f17;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.remarks p {
+    color: #555;
+}
+
+.footer-section {
+    border-top: 2px solid #e0e0e0;
     padding-top: 20px;
-    border-top: 2px solid #e9ecef;
+    text-align: center;
 }
 
-.footer-logo {
-    display: flex;
-    align-items: center;
-}
-
-.footer-logo-img {
-    max-height: 40px;
-    max-width: 150px;
-}
-
-.footer-info {
-    text-align: right;
-}
-
-.footer-contact p {
-    margin: 3px 0;
-    font-size: 12px;
+.footer-section p {
+    margin: 10px 0;
     color: #666;
 }
 
-.footer-signature {
+.signature {
     margin-top: 15px;
-    text-align: center;
+    padding: 15px;
+    background: #f0f7ff;
+    border-radius: 8px;
+    display: inline-block;
 }
 
-.footer-signature p {
-    font-size: 14px;
-    color: #333;
+.signature p {
     margin: 5px 0;
-    font-style: italic;
-}
-
-.stamp-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px 0;
-    padding: 20px;
-    background: #f8f9ff;
-    border-radius: 10px;
-    border: 2px dashed #667eea;
-}
-
-.stamp-image {
-    max-width: 120px;
-    max-height: 120px;
-    border-radius: 50%;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-.stamp-fallback {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    border-radius: 50%;
-    width: 120px;
-    height: 120px;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-.stamp-text {
-    font-size: 14px;
-    font-weight: 700;
-    text-align: center;
-    line-height: 1.2;
+    color: #2c3e50;
+    font-weight: bold;
 }
 
 /* アニメーション */
