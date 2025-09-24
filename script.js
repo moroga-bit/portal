@@ -1166,47 +1166,34 @@ class OrderFormManager {
             }
             
             const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4',
-                compress: true, // PDF圧縮を有効化
-                precision: 2 // 精度を下げてファイルサイズ削減
-            });
+            const pdf = new jsPDF('p', 'mm', 'a4'); // 基本設定
             
             // 要素が表示されているか確認
             if (contentElement.offsetWidth === 0 || contentElement.offsetHeight === 0) {
                 throw new Error('プレビュー要素が表示されていません');
             }
             
-            // プレビュー要素（発注書本体）のみをキャプチャ（ロゴ鮮明化重視）
+            // プレビュー要素（発注書本体）のみをキャプチャ（最もシンプルな設定）
             const canvas = await html2canvas(contentElement, {
-                scale: 2, // ロゴの鮮明さ重視で解像度を最大に（1.8→2）
-                useCORS: true,
-                allowTaint: false,
-                backgroundColor: '#ffffff',
-                logging: false,
-                width: contentElement.offsetWidth,
-                height: contentElement.offsetHeight,
-                x: 0,
-                y: 0,
-                foreignObjectRendering: true,
-                letterRendering: true,
-                imageTimeout: 15000,
-                removeContainer: false,
-                onclone: function(clonedDoc) {
-                    // クローンされたドキュメント内のロゴ画像を最適化
-                    const logos = clonedDoc.querySelectorAll('.header-logo, .footer-logo-img');
-                    logos.forEach(logo => {
-                        logo.style.imageRendering = 'crisp-edges';
-                        logo.style.filter = 'contrast(1.2) brightness(1.1) saturate(1.2)';
-                    });
-                }
+                scale: 1, // 基本解像度
+                backgroundColor: '#ffffff'
             });
             
             console.log('Canvas size:', canvas.width, 'x', canvas.height);
             
-            const imgData = canvas.toDataURL('image/jpeg', 0.92); // JPEG品質92%で鮮明さ向上（85%→92%）
+            // キャンバスが正常に作成されたかチェック
+            if (canvas.width === 0 || canvas.height === 0) {
+                throw new Error('キャンバスの作成に失敗しました');
+            }
+            
+            const imgData = canvas.toDataURL('image/png'); // PNG形式で確実に表示
+            
+            // 画像データが正常に作成されたかチェック
+            if (!imgData || imgData === 'data:,') {
+                throw new Error('画像データの作成に失敗しました');
+            }
+            
+            console.log('画像データサイズ:', imgData.length, 'bytes');
             const pageWidth = pdf.internal.pageSize.getWidth(); // 210mm
             const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
             
