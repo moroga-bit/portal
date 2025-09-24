@@ -1140,10 +1140,20 @@ class OrderFormManager {
             
             // プレビューを表示してからPDF生成
             this.showPreview();
-            await new Promise(resolve => setTimeout(resolve, 1000)); // プレビュー表示を待つ
+            await new Promise(resolve => setTimeout(resolve, 1500)); // プレビュー表示をより長く待つ
             
             const previewElement = document.getElementById('previewContent');
-            const contentElement = previewElement.querySelector('.order-preview') || previewElement;
+            if (!previewElement) {
+                throw new Error('プレビュー要素が見つかりません');
+            }
+            
+            const contentElement = previewElement.querySelector('.order-preview');
+            if (!contentElement) {
+                throw new Error('発注書プレビューコンテンツが見つかりません');
+            }
+            
+            console.log('PDF生成対象要素:', contentElement);
+            console.log('要素のサイズ:', contentElement.offsetWidth, 'x', contentElement.offsetHeight);
             
             // jsPDFライブラリの確認
             if (typeof window.jspdf === 'undefined') {
@@ -1164,27 +1174,22 @@ class OrderFormManager {
                 precision: 2 // 精度を下げてファイルサイズ削減
             });
             
-            // プレビュー要素（発注書本体）のみをキャプチャ（軽量化設定）
+            // 要素が表示されているか確認
+            if (contentElement.offsetWidth === 0 || contentElement.offsetHeight === 0) {
+                throw new Error('プレビュー要素が表示されていません');
+            }
+            
+            // プレビュー要素（発注書本体）のみをキャプチャ（安全な設定）
             const canvas = await html2canvas(contentElement, {
-                scale: 1.5, // 解像度を下げてファイルサイズ削減（2→1.5）
+                scale: 1.2, // より軽量な設定
                 useCORS: true,
-                allowTaint: true,
+                allowTaint: false, // より安全な設定
                 backgroundColor: '#ffffff',
-                width: contentElement.scrollWidth,
-                height: contentElement.scrollHeight,
-                scrollX: 0,
-                scrollY: 0,
-                windowWidth: 800, // ウィンドウサイズを縮小（1200→800）
-                windowHeight: 600, // ウィンドウサイズを縮小（800→600）
-                removeContainer: true, // 不要な要素を削除
-                ignoreElements: function(element) {
-                    // 不要な要素をスキップしてファイルサイズ削減
-                    return element.classList && (
-                        element.classList.contains('modal') ||
-                        element.classList.contains('btn') ||
-                        element.classList.contains('floating-shapes')
-                    );
-                }
+                logging: false, // ログを無効化してパフォーマンス向上
+                width: contentElement.offsetWidth,
+                height: contentElement.offsetHeight,
+                x: 0,
+                y: 0
             });
             
             console.log('Canvas size:', canvas.width, 'x', canvas.height);
@@ -1731,9 +1736,14 @@ class OrderFormManager {
             const data = this.getFormData();
             
             // メール件名と本文を作成
-            const supplierName = data.supplierName || '発注先未入力';
-            const subject = encodeURIComponent(`【発注書】${supplierName} 様 - ${data.orderDate}`);
-            const body = encodeURIComponent(`${supplierName} 様
+            const supplierName = data.supplierName && data.supplierName.trim() ? data.supplierName.trim() : '';
+            
+            let subject, body;
+            
+            if (supplierName) {
+                // 発注先が入力されている場合
+                subject = encodeURIComponent(`【発注書】${supplierName} 様 - ${data.orderDate}`);
+                body = encodeURIComponent(`${supplierName} 様
 
 いつもお世話になっております。
 株式会社諸鹿彩色です。
@@ -1756,6 +1766,31 @@ ${data.staffMember ? '担当: ' + data.staffMember : ''}
 TEL: 028-688-8618
 Email: info@moroga.info
 ────────────────────────`);
+            } else {
+                // 発注先が未入力の場合
+                subject = encodeURIComponent(`【発注書】${data.orderDate}`);
+                body = encodeURIComponent(`お疲れ様です。
+
+株式会社諸鹿彩色です。
+
+添付の発注書をご確認いただき、工事のお手配をお願いいたします。
+
+【発注内容】
+発注日: ${data.orderDate}
+工事完了予定: ${data.completionMonth || '別途調整'}
+支払条件: ${data.paymentTerms}
+
+ご不明な点がございましたら、お気軽にお問い合わせください。
+よろしくお願いいたします。
+
+────────────────────────
+株式会社諸鹿彩色
+${data.staffMember ? '担当: ' + data.staffMember : ''}
+〒321-0111 栃木県宇都宮市川田町1048-5
+TEL: 028-688-8618
+Email: info@moroga.info
+────────────────────────`);
+            }
 
             // メーラーを起動
             const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
