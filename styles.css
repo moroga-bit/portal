@@ -678,6 +678,18 @@ body::before {
     box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
 }
 
+.btn-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #007bff 100%);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-info:hover {
+    background: linear-gradient(135deg, #138496 0%, #0056b3 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
+}
+
 .btn-warning {
     background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
     color: #212529;
@@ -800,19 +812,29 @@ body::before {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-/* PDFヘッダー（シンプル白背景） */
+/* PDFヘッダー（美しいレイアウト） */
 .pdf-header {
     margin-bottom: 40px;
-    border-bottom: 2px solid #e9ecef;
-    padding-bottom: 25px;
     background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
 }
 
-.header-top {
+.header-main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    padding: 30px 40px 25px 40px;
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+    border-bottom: 1px solid #e9ecef;
+}
+
+.company-brand {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-grow: 1;
 }
 
 .logo-section {
@@ -821,96 +843,153 @@ body::before {
 }
 
 .header-logo {
-    max-width: 100px;
-    max-height: 100px;
+    max-width: 120px;
+    max-height: 120px;
     object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
 }
 
 .header-logo-fallback {
     display: none;
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 50%;
+    border-radius: 12px;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .header-logo-icon {
-    font-size: 2.5rem;
+    font-size: 3rem;
     font-weight: 900;
     color: white;
-    margin-bottom: 3px;
+    margin-bottom: 5px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .header-logo-text {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: white;
+    letter-spacing: 2px;
+}
+
+.company-details {
+    margin-left: 25px;
+}
+
+.company-name {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 12px;
+    font-weight: 800;
     letter-spacing: 1px;
 }
 
-.header-info {
-    text-align: center;
-    flex-grow: 1;
-    margin: 0 30px;
+.company-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
-.header-info h1 {
-    font-size: 1.8rem;
-    color: #2c3e50;
-    margin-bottom: 8px;
-    font-weight: bold;
+.address {
+    color: #495057;
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
-.header-info p {
-    margin: 3px 0;
-    color: #666;
+.contact-info {
+    color: #6c757d;
     font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.document-header {
+    text-align: right;
+    padding-left: 30px;
 }
 
 .document-title {
-    text-align: right;
-}
-
-.document-title h2 {
-    font-size: 2.5rem;
+    font-size: 3.5rem;
     color: #2c3e50;
     font-weight: 900;
-    margin: 0;
+    margin: 0 0 5px 0;
+    letter-spacing: 3px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.header-bottom {
-    padding: 15px 0;
-}
-
-.order-details-header {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    background: #f8f9fa;
-    padding: 15px 20px;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-}
-
-.detail-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.detail-label {
+.document-subtitle {
+    font-size: 0.9rem;
+    color: #6c757d;
     font-weight: 600;
-    color: #495057;
-    font-size: 0.9rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
 }
 
-.detail-value {
-    font-weight: 500;
+/* 発注情報セクション */
+.order-info-section {
+    padding: 25px 40px 30px 40px;
+    background: #fafbfc;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    border-color: #667eea;
+}
+
+.info-icon {
+    font-size: 1.2rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.info-content {
+    flex-grow: 1;
+}
+
+.info-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
     color: #2c3e50;
-    font-size: 0.9rem;
+    line-height: 1.2;
 }
 
 

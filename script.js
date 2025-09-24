@@ -221,10 +221,36 @@ class OrderFormManager {
                 e.preventDefault();
                 console.log('メール送信ボタンがクリックされました');
                 this.sendPDFByEmail();
-        });
+            });
             console.log('メール送信ボタンのイベントリスナーを設定しました');
         } else {
             console.error('sendEmailBtn が見つかりません');
+        }
+
+        // PDF生成 & メール送信ボタン
+        const generateAndEmailBtn = document.getElementById('generateAndEmailBtn');
+        if (generateAndEmailBtn) {
+            generateAndEmailBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                console.log('PDF生成 & メール送信ボタンがクリックされました');
+                
+                try {
+                    // PDF生成
+                    await this.generatePDF();
+                    
+                    // 少し待ってからメール送信
+                    setTimeout(() => {
+                        this.sendPDFByEmail();
+                    }, 1000);
+                    
+                } catch (error) {
+                    console.error('PDF生成 & メール送信エラー:', error);
+                    alert('PDF生成中にエラーが発生しました: ' + error.message);
+                }
+            });
+            console.log('PDF生成 & メール送信ボタンのイベントリスナーを設定しました');
+        } else {
+            console.error('generateAndEmailBtn が見つかりません');
         }
 
 
@@ -981,41 +1007,58 @@ class OrderFormManager {
         return `
             <div class="order-preview">
                 <div class="pdf-header">
-                    <div class="header-top">
-                        <div class="logo-section">
-                            <img src="logo.png" alt="株式会社諸鹿彩色" class="header-logo" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div class="header-logo-fallback">
-                                <div class="header-logo-icon">M</div>
-                                <div class="header-logo-text">MOROGA</div>
+                    <div class="header-main">
+                        <div class="company-brand">
+                            <div class="logo-section">
+                                <img src="logo.png" alt="株式会社諸鹿彩色" class="header-logo" onload="this.nextElementSibling.style.display='none';" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="header-logo-fallback">
+                                    <div class="header-logo-icon">M</div>
+                                    <div class="header-logo-text">MOROGA</div>
+                                </div>
+                            </div>
+                            <div class="company-details">
+                                <h1 class="company-name">株式会社諸鹿彩色</h1>
+                                <div class="company-contact">
+                                    <span class="address">〒321-0111 栃木県宇都宮市川田町1048-5</span>
+                                    <span class="contact-info">TEL: 028-688-8618 | Email: info@moroga.info</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="header-info">
-                            <h1>株式会社諸鹿彩色</h1>
-                            <p>〒321-0111 栃木県宇都宮市川田町1048-5</p>
-                            <p>TEL: 028-688-8618 | Email: info@moroga.info</p>
-                        </div>
-                        <div class="document-title">
-                            <h2>発注書</h2>
+                        <div class="document-header">
+                            <h2 class="document-title">発注書</h2>
+                            <div class="document-subtitle">ORDER FORM</div>
                         </div>
                     </div>
                     
-                    <div class="header-bottom">
-                        <div class="order-details-header">
-                            <div class="detail-item">
-                                <span class="detail-label">発注日:</span>
-                                <span class="detail-value">${data.orderDate}</span>
+                    <div class="order-info-section">
+                        <div class="info-grid">
+                            <div class="info-item date-item">
+                                <span class="info-icon">📅</span>
+                                <div class="info-content">
+                                    <span class="info-label">発注日</span>
+                                    <span class="info-value">${data.orderDate}</span>
+                                </div>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-label">工事完了予定:</span>
-                                <span class="detail-value">${data.completionMonth || '別途調整'}</span>
+                            <div class="info-item completion-item">
+                                <span class="info-icon">🏗️</span>
+                                <div class="info-content">
+                                    <span class="info-label">工事完了予定</span>
+                                    <span class="info-value">${data.completionMonth || '別途調整'}</span>
+                                </div>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-label">支払条件:</span>
-                                <span class="detail-value">${data.paymentTerms}</span>
+                            <div class="info-item payment-item">
+                                <span class="info-icon">💰</span>
+                                <div class="info-content">
+                                    <span class="info-label">支払条件</span>
+                                    <span class="info-value">${data.paymentTerms}</span>
+                                </div>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-label">担当:</span>
-                                <span class="detail-value">${data.staffMember || '未設定'}</span>
+                            <div class="info-item staff-item">
+                                <span class="info-icon">👤</span>
+                                <div class="info-content">
+                                    <span class="info-label">担当者</span>
+                                    <span class="info-value">${data.staffMember || '未設定'}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
