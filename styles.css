@@ -414,6 +414,17 @@ body::before {
     color: #6c757d;
 }
 
+/* 数値入力の上下矢印（スピンボタン）を非表示 */
+.form-group input[type="number"]::-webkit-outer-spin-button,
+.form-group input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.form-group input[type="number"] {
+    -moz-appearance: textfield;
+}
+
 
 /* 商品行 */
 .item-row {

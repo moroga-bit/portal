@@ -7,6 +7,13 @@ class OrderFormManager {
         this.setDefaultDate();
         this.setupExistingItemRows();
         this.calculateTotals();
+        
+        // 強制的に小計計算を実行（初期化後）
+        setTimeout(() => {
+            console.log('=== 初期化後の強制計算実行 ===');
+            this.forceCalculateAllSubtotals();
+        }, 100);
+        
         console.log('=== OrderFormManager 初期化完了 ===');
     }
 
@@ -1739,6 +1746,40 @@ Email: info@moroga.info`,
             alert('Google Workspace連携でエラーが発生しました。\n通常のメーラーを起動しました。\nPDFファイルを手動で添付してください。\n\nエラー: ' + error.message);
         }
     }
+
+    // 全ての行の小計を強制的に計算
+    forceCalculateAllSubtotals() {
+        console.log('=== 全ての小計を強制計算 ===');
+        const rows = document.querySelectorAll('.item-row');
+        console.log('見つかった商品行数:', rows.length);
+        
+        rows.forEach((row, index) => {
+            console.log(`行 ${index + 1} の小計計算中...`);
+            
+            const quantityInput = row.querySelector('input[name="itemQuantity[]"]');
+            const priceInput = row.querySelector('input[name="itemPrice[]"]');
+            const subtotalInput = row.querySelector('input[name="itemSubtotal[]"]');
+            
+            if (quantityInput && priceInput && subtotalInput) {
+                const quantity = parseFloat(quantityInput.value) || 0;
+                const price = parseFloat(priceInput.value) || 0;
+                const subtotal = quantity * price;
+                
+                console.log(`行 ${index + 1}:`, { quantity, price, subtotal });
+                
+                if (subtotal > 0) {
+                    subtotalInput.value = Math.floor(subtotal);
+                    console.log(`行 ${index + 1} 小計設定:`, Math.floor(subtotal));
+                }
+            } else {
+                console.log(`行 ${index + 1}: input要素が見つかりません`);
+            }
+        });
+        
+        // 合計も再計算
+        this.calculateTotals();
+        console.log('=== 強制計算完了 ===');
+    }
 }
 
 // グローバル関数（HTMLから呼び出される）
@@ -1793,7 +1834,7 @@ window.addEventListener('load', () => {
             console.error('フォールバック初期化エラー:', error);
         }
     }
-}
+});
 
 // フォームバリデーション
 document.getElementById('orderForm').addEventListener('submit', (e) => {
