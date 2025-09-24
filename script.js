@@ -1494,44 +1494,85 @@ Email: info@moroga.info
 
     // Google Workspaceが利用可能かチェック
     isGoogleWorkspaceAvailable() {
-        // Google APIs Client Libraryが読み込まれているかチェック
-        return typeof gapi !== 'undefined';
+        // Google APIs Client LibraryとGoogle設定が読み込まれているかチェック
+        return typeof gapi !== 'undefined' && typeof GoogleWorkspaceIntegration !== 'undefined';
     }
 
     // Google Workspace連携でのメール送信
     async sendWithGoogleWorkspace() {
         try {
-            // Google API認証
-            await this.initializeGoogleAPIs();
+            // Google Workspace統合クラスを初期化
+            if (!this.googleIntegration) {
+                this.googleIntegration = new GoogleWorkspaceIntegration();
+            }
+
+            const data = this.getFormData();
             
+            // PDF添付データを準備
+            let attachments = [];
+            if (this.lastGeneratedPDF && this.lastGeneratedPDF.blob) {
+                const pdfBase64 = await this.googleIntegration.blobToBase64(this.lastGeneratedPDF.blob);
+                attachments.push({
+                    filename: this.lastGeneratedPDF.fileName,
+                    mimeType: 'application/pdf',
+                    data: pdfBase64
+                });
+            }
+
+            // メールデータ作成
+            const emailData = {
+                to: '', // 宛先は手動入力またはフォームから取得
+                subject: `発注書 - ${data.supplierName} - ${data.orderDate}`,
+                body: `お疲れ様です。
+
+発注書を送付いたします。
+ご確認のほど、よろしくお願いいたします。
+
+【発注詳細】
+発注先: ${data.supplierName}
+発注日: ${data.orderDate}
+工事完了月: ${data.completionMonth || '未設定'}
+支払条件: ${data.paymentTerms}
+
+株式会社諸鹿彩色
+${data.staffMember ? data.staffMember : ''}
+TEL: 028-688-8618
+Email: info@moroga.info`,
+                attachments: attachments
+            };
+
+            // 宛先の入力を求める
+            const recipient = prompt('送信先のメールアドレスを入力してください:');
+            if (!recipient) {
+                throw new Error('送信先が入力されていません');
+            }
+            emailData.to = recipient;
+
             // Gmail APIでメール送信
-            await this.sendGmail();
+            await this.googleIntegration.sendEmail(emailData);
             
             // Google Drive APIでPDF保存
-            await this.saveToDrive();
+            if (this.lastGeneratedPDF && this.lastGeneratedPDF.blob) {
+                await this.googleIntegration.saveToDrive(
+                    this.lastGeneratedPDF.blob, 
+                    this.lastGeneratedPDF.fileName
+                );
+            }
+            
+            alert('メール送信とGoogle Drive保存が完了しました！');
             
         } catch (error) {
             console.error('Google Workspace連携エラー:', error);
-            throw error;
+            
+            // エラー時は通常のメーラーを起動
+            const data = this.getFormData();
+            const subject = encodeURIComponent(`発注書 - ${data.supplierName} - ${data.orderDate}`);
+            const body = encodeURIComponent(`発注書を送付いたします。\n生成されたPDFファイルを手動で添付してください。`);
+            const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+            window.open(mailtoLink);
+            
+            alert('Google Workspace連携でエラーが発生しました。\n通常のメーラーを起動しました。\nPDFファイルを手動で添付してください。\n\nエラー: ' + error.message);
         }
-    }
-
-    // Google APIs初期化
-    async initializeGoogleAPIs() {
-        // まずは簡単な実装で、後で詳細な認証を追加
-        console.log('Google APIs初期化中...');
-    }
-
-    // Gmail API使用してメール送信
-    async sendGmail() {
-        console.log('Gmail APIでメール送信中...');
-        // 実装予定
-    }
-
-    // Google Drive APIでPDF保存
-    async saveToDrive() {
-        console.log('Google DriveにPDF保存中...');
-        // 実装予定
     }
 });
 
