@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>諸鹿彩色 社内ポータル</title>
+    <style>
+        body {
+            /* 読みやすいフォント設定 */
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <header class="bg-white shadow-md">
+        <nav class="container mx-auto px-6 py-4">
+            <h1 class="text-3xl font-bold text-gray-800">
+                諸鹿彩色 社内ポータル
+            </h1>
+            <p class="text-gray-600">現場作業の効率化と情報共有のために</p>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-8">
+        
+        <!-- 業務効率化ツール -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">業務効率化ツール</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- (変更) ツール 1: 2液塗料 混合計算 -->
+                <!-- (変更) リンク先を 'coating_jotform_mixer_calculator.html' に更新 -->
+                <a href="coating_jotform_mixer_calculator.html" class="block bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div class="p-6">
+                        <!-- (変更) アイコンの色をアクセントカラー(#e94615)に -->
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-[#e94615] text-white mb-4">
+                            <!-- 電卓アイコン (Heroicons) -->
+                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008Zm0 3h.008v.008H8.25v-.008Zm0 3h.008v.008H8.25v-.008Zm3-6h.008v.008H11.25v-.008Zm0 3h.008v.008H11.25v-.008Zm0 3h.008v.008H11.25v-.008Zm3-6h.008v.008H14.25v-.008Zm0 3h.008v.008H14.25v-.008Zm0 3h.008v.008H14.25v-.008Zm3-11.25a.75.75 0 0 1 .75.75v14.25a.75.75 0 0 1-.75.75H7.5a.75.75 0 0 1-.75-.75V7.5a.75.75 0 0 1 .75-.75h9.75Z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">2液塗料 混合計算</h3>
+                        <!-- (変更) 説明文を最新の機能に合わせる -->
+                        <p class="text-gray-600">セット重量から比率を計算し、作成したい総重量から必要な主剤・硬化剤の量を割り出します。</p>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-3">
+                        <!-- (変更) テキストの色をアクセントカラーに -->
+                        <span class="text-[#e94615] font-medium">ツールを開く &rarr;</span>
+                    </div>
+                </a>
+
+                <!-- ここに新しいツールカードを追加できます -->
+                <!-- 
+                <a href="#" class="block bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div class="p-6">
+                        ...
+                    </div>
+                </a>
+                -->
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>
+

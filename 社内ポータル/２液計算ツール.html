@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>2液塗料 混合計算ツール</title>
+    <style>
+        /* スマートフォンでの数値入力の矢印（スピンボタン）を非表示にする */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        /* 画面全体のラッパー */
+        .calc-wrapper {
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="calc-wrapper bg-white rounded-lg shadow-lg">
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">
+            2液塗料 混合計算ツール
+        </h1>
+
+        <!-- (A) セット重量から比率を計算 -->
+        <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <label class="block text-lg font-medium text-gray-700 mb-2">A. 配合比率の準備</label>
+            <p class="text-sm text-gray-600 mb-3">（缶の記載から比率を計算します）</p>
+            <div class="flex items-center space-x-4 mb-4">
+                <div class="flex-1">
+                    <label for="set-main-amount" class="block text-sm text-gray-600 mb-1">主剤</label>
+                    <div class="relative">
+                        <input type="number" id="set-main-amount" placeholder="例: 15" class="w-full p-3 border border-gray-300 rounded-lg text-lg text-center pr-12">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500 pointer-events-none">kg</span>
+                    </div>
+                </div>
+                <span class="text-2xl font-bold pt-6">:</span>
+                <div class="flex-1">
+                    <label for="set-hardener-amount" class="block text-sm text-gray-600 mb-1">硬化剤</label>
+                    <div class="relative">
+                        <input type="number" id="set-hardener-amount" placeholder="例: 1.5" class="w-full p-3 border border-gray-300 rounded-lg text-lg text-center pr-12">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500 pointer-events-none">kg</span>
+                    </div>
+                </div>
+            </div>
+            <button id="calculate-ratio-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-lg transition duration-300">
+                ↓ 比率をセットして次に進む
+            </button>
+            
+            <!-- 計算された比率の表示エリア -->
+            <div id="ratio-display-area" class="mt-4 p-3 bg-blue-100 border border-blue-300 text-blue-800 rounded-lg text-center font-medium hidden">
+                <!-- 比率がここに表示されます -->
+            </div>
+
+            <!-- (変更) 配合比率の手入力フォームは削除 -->
+
+        </div>
+
+
+        <!-- (変更) B. 作成したい総重量 と 計算ボタン をラップする -->
+        <div id="step-b-wrapper" class="hidden">
+            <!-- (変更) B. 作成したい総重量 -->
+            <div class="mb-6">
+                <label for="total-amount-target" class="block text-lg font-medium text-gray-700 mb-2">B. どれくらい作成しますか？</label>
+                <p class="text-sm text-gray-600 mb-3">作成したい総重量 (kg) を入力してください。</p>
+                <div class="relative">
+                    <input type="number" id="total-amount-target" placeholder="例: 5.0" class="w-full p-3 border border-gray-300 rounded-lg text-lg pr-12">
+                    <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500 pointer-events-none">kg</span>
+                </div>
+            </div>
+
+            <!-- 計算実行ボタン -->
+            <div class="mb-6">
+                <button id="calculate-btn" class="w-full bg-[#e94615] hover:bg-[#d33f13] text-white font-bold py-3 px-4 rounded-lg text-lg transition duration-300">
+                    計算する
+                </button>
+            </div>
+            
+            <!-- (変更) 計算結果の表示 -->
+            <div id="result-area" class="hidden text-center bg-gray-50 p-6 rounded-lg">
+                <p class="text-lg text-gray-700 mb-2">必要な主剤の量:</p>
+                <p id="main-result" class="text-4xl font-bold text-gray-800">0.0 kg</p>
+                <p class="text-lg text-gray-600 mt-4">必要な硬化剤の量:</p>
+                <p id="hardener-result" class="text-4xl font-bold text-[#e94615]">0.0 kg</p>
+            </div>
+        </div>
+
+
+        <!-- カスタムアラート（モーダル） -->
+        <div id="custom-alert" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm mx-auto">
+                <p id="custom-alert-message" class="text-lg text-gray-800 text-center"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // (新設) A. 比率計算用のDOM
+        const setMainAmountInput = document.getElementById('set-main-amount');
+        const setHardenerAmountInput = document.getElementById('set-hardener-amount');
+        const calculateRatioBtn = document.getElementById('calculate-ratio-btn');
+        const ratioDisplayArea = document.getElementById('ratio-display-area'); 
+        
+        // (新設) B. ステップ2のラッパー
+        const stepBWrapper = document.getElementById('step-b-wrapper');
+
+        // (変更) B, C. 混合計算用のDOM
+        const totalAmountTargetInput = document.getElementById('total-amount-target'); // (変更) ID
+        const calculateBtn = document.getElementById('calculate-btn');
+        const resultArea = document.getElementById('result-area');
+        const mainResult = document.getElementById('main-result'); // (変更) ID
+        const hardenerResult = document.getElementById('hardener-result'); // (変更) ID
+        const customAlert = document.getElementById('custom-alert');
+        const customAlertMessage = document.getElementById('custom-alert-message');
+
+        // (変更) 比率をスクリプト内で保持する変数
+        let currentMainRatio = 0;
+        let currentHardenerRatio = 1; // 硬化剤を 1 として扱う
+
+        // (新設) A. 比率計算ボタンがクリックされたときの処理
+        calculateRatioBtn.addEventListener('click', () => {
+            const setMainAmount = parseFloat(setMainAmountInput.value);
+            const setHardenerAmount = parseFloat(setHardenerAmountInput.value);
+
+            // 入力値が正しいかチェック
+            if (isNaN(setMainAmount) || isNaN(setHardenerAmount) || setMainAmount <= 0 || setHardenerAmount <= 0) {
+                showCustomAlert("セットの主剤と硬化剤の有効な重量(kg)を入力してください。");
+                return;
+            }
+
+            // 硬化剤を 1 とした場合の、主剤の比率を計算
+            const calculatedRatio = setMainAmount / setHardenerAmount;
+            
+            // --- 小数点表示の調整 ---
+            const formattedRatio = parseFloat(calculatedRatio.toFixed(3)).toString();
+            // ---------------------------------
+
+            // (変更) グローバル変数に比率を保存
+            currentMainRatio = parseFloat(formattedRatio);
+            currentHardenerRatio = 1; // 硬化剤は常に 1
+
+            // (変更) 比率表示エリアにテキストを表示
+            ratioDisplayArea.innerHTML = `配合比率は <span class="font-bold">${formattedRatio}</span> 対 <span class="font-bold">1</span> です。`;
+            ratioDisplayArea.classList.remove('hidden');
+
+            // (新設) ステップBを表示する
+            stepBWrapper.classList.remove('hidden');
+        });
+
+
+        // C. 計算ボタンがクリックされたときの処理
+        calculateBtn.addEventListener('click', () => {
+            // (変更) 作成したい総重量を取得
+            const totalAmountTarget = parseFloat(totalAmountTargetInput.value);
+            
+            // (変更) 内部変数から比率を取得
+            const mainRatio = currentMainRatio;
+            const hardenerRatio = currentHardenerRatio;
+
+            // (変更) 入力値が正しいかチェック
+            if (mainRatio <= 0) { // Aのステップが完了しているか
+                showCustomAlert("先に「A. 配合比率の準備」を完了してください。");
+                return;
+            }
+            if (isNaN(totalAmountTarget) || totalAmountTarget <= 0) {
+                showCustomAlert("有効な「作成したい総重量」を入力してください。");
+                resultArea.classList.add('hidden'); // 結果エリアを隠す
+                return;
+            }
+
+            // (変更) 計算ロジック: 総重量から主剤と硬化剤の必要量を逆算
+            const totalRatioParts = mainRatio + hardenerRatio;
+            const mainAmountNeeded = (totalAmountTarget * mainRatio) / totalRatioParts;
+            const hardenerAmountNeeded = (totalAmountTarget * hardenerRatio) / totalRatioParts;
+
+            // (変更) 結果を表示
+            mainResult.textContent = mainAmountNeeded.toFixed(3) + ' kg';
+            hardenerResult.textContent = hardenerAmountNeeded.toFixed(3) + ' kg';
+            resultArea.classList.remove('hidden');
+        });
+
+        // カスタムアラート表示
+        function showCustomAlert(message) {
+            customAlertMessage.textContent = message;
+            customAlert.classList.remove('hidden');
+
+            // 3秒後に自動で消える
+            setTimeout(() => {
+                if (customAlert) { // alertBoxがまだ存在するか確認
+                    customAlert.classList.add('hidden');
+                }
+            }, 3000);
+        }
+    </script>
+
+</body>
+</html>
+
+
