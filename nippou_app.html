@@ -112,10 +112,26 @@
         const appId = 'default-app-id'; 
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        // Firebase アプリの初期化
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // Firebase アプリの初期化（エラーハンドリング付き）
+        let app = null;
+        let auth = null;
+        let db = null;
+        let isFirebaseAvailable = false;
+
+        try {
+            if (firebaseConfig && Object.keys(firebaseConfig).length > 0) {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                isFirebaseAvailable = true;
+                console.log("Firebase初期化成功");
+            } else {
+                console.warn("Firebase設定が見つかりません。オフラインモードで動作します。");
+            }
+        } catch (error) {
+            console.error("Firebase初期化エラー:", error);
+            console.warn("オフラインモードで動作します。");
+        }
 
         // --- グローバル変数 ---
         let currentUserId = null;
@@ -187,6 +203,12 @@
          */
         async function handleFormSubmit(e) {
             e.preventDefault(); // デフォルトのフォーム送信をキャンセル
+            
+            if (!isFirebaseAvailable) {
+                alert('Firebase設定が不足しているため、投稿できません。\n管理者にお問い合わせください。');
+                return;
+            }
+            
             if (!currentUserId) {
                 console.error('ユーザー認証が完了していません。');
                 return;
@@ -246,6 +268,10 @@
          */
         function subscribeToHistory(userId) {
             if (!userId) return;
+            if (!isFirebaseAvailable || !db) {
+                reportHistory.innerHTML = '<p class="text-gray-500 text-center">Firebase設定が必要です。</p>';
+                return;
+            }
 
             // (変更) 'where' 句を削除し、インデックスエラーと権限エラーを回避
             //     ルール (allow read: if request.auth != null;) で
@@ -322,49 +348,57 @@
 
         // --- 初期化処理 ---
 
-        // 認証状態の監視
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // ユーザーが認証済み
-                console.log("認証成功:", user.uid);
-                currentUserId = user.uid;
-                userIdDisplay.textContent = currentUserId;
-                
-                // 履歴の監視を開始
-                subscribeToHistory(currentUserId);
-                
-                // フォームを有効化
-                submitButton.disabled = false;
-            } else {
-                // ユーザーが未認証
-                console.log("未認証。");
-                currentUserId = null;
-                userIdDisplay.textContent = '未認証';
-                submitButton.disabled = true; // 未認証時は投稿不可
-            }
-        });
-
-        // 匿名認証の試行
-        (async () => {
-            try {
-                if (initialAuthToken) {
-                    console.log("カスタムトークンでサインインします...");
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    console.log("匿名でサインインします...");
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("認証エラー:", error);
-                userIdDisplay.textContent = '認証エラー';
-            }
-        })();
-
         // 今日の日付をセット
         setTodayDate();
 
-        // 作業員リストをフォームにセット
+        // 作業員リストをフォームにセット（Firebaseに依存しない）
         populateWorkerList();
+
+        // Firebaseが利用可能な場合のみ認証を試行
+        if (isFirebaseAvailable && auth) {
+            // 認証状態の監視
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // ユーザーが認証済み
+                    console.log("認証成功:", user.uid);
+                    currentUserId = user.uid;
+                    userIdDisplay.textContent = currentUserId;
+                    
+                    // 履歴の監視を開始
+                    subscribeToHistory(currentUserId);
+                    
+                    // フォームを有効化
+                    submitButton.disabled = false;
+                } else {
+                    // ユーザーが未認証
+                    console.log("未認証。");
+                    currentUserId = null;
+                    userIdDisplay.textContent = '未認証';
+                    submitButton.disabled = true; // 未認証時は投稿不可
+                }
+            });
+
+            // 匿名認証の試行
+            (async () => {
+                try {
+                    if (initialAuthToken) {
+                        console.log("カスタムトークンでサインインします...");
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        console.log("匿名でサインインします...");
+                        await signInAnonymously(auth);
+                    }
+                } catch (error) {
+                    console.error("認証エラー:", error);
+                    userIdDisplay.textContent = '認証エラー';
+                }
+            })();
+        } else {
+            // Firebaseが利用不可の場合
+            userIdDisplay.textContent = 'Firebase未設定';
+            submitButton.disabled = true;
+            reportHistory.innerHTML = '<p class="text-gray-500 text-center">Firebase設定が必要です。</p>';
+        }
 
         // フォーム送信イベントリスナーを設定
         reportForm.addEventListener('submit', handleFormSubmit);
