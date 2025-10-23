@@ -109,7 +109,7 @@
         // Firebase SDK のインポート
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp, getDocs, limit, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp, getDocs, limit, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Firebase設定
         const firebaseConfig = {
@@ -284,6 +284,24 @@
         }
 
         /**
+         * 投稿を削除する
+         */
+        async function deleteReport(docId) {
+            if (!confirm('この投稿を削除しますか？\n削除したデータは復元できません。')) {
+                return;
+            }
+
+            try {
+                const docRef = doc(db, collectionPath, docId);
+                await deleteDoc(docRef);
+                console.log("ドキュメントが削除されました。ID: ", docId);
+            } catch (error) {
+                console.error("削除中にエラーが発生しました: ", error);
+                alert('削除に失敗しました。');
+            }
+        }
+
+        /**
          * 投稿履歴をFirestoreから読み込み、表示する
          */
         function subscribeToHistory(userId) {
@@ -311,10 +329,11 @@
                 }
                 
                 const documents = [];
-                querySnapshot.forEach((doc) => {
+                querySnapshot.forEach((docSnapshot) => {
                     // (新設) 取得した全データから、自分のuserIdのものだけをフィルタリング
-                    const data = doc.data();
+                    const data = docSnapshot.data();
                     if (data.userId === userId) {
+                        data.docId = docSnapshot.id; // ドキュメントIDを追加
                         documents.push(data);
                     }
                 });
@@ -348,7 +367,12 @@
                         <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="font-semibold text-gray-800">${data.reportDate}</span>
-                                <span class="text-sm text-gray-500">${formattedDate}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm text-gray-500">${formattedDate}</span>
+                                    <button onclick="deleteReport('${data.docId}')" class="text-red-500 hover:text-red-700 text-sm px-2 py-1 rounded border border-red-300 hover:bg-red-50 transition-colors">
+                                        削除
+                                    </button>
+                                </div>
                             </div>
                             <p class="text-sm text-gray-700 font-medium">現場名: ${data.siteName || '未指定'}</p>
                             <p class="text-sm text-gray-700">作業員: ${data.workerName || '未指定'}</p>
@@ -423,6 +447,9 @@
 
         // フォーム送信イベントリスナーを設定
         reportForm.addEventListener('submit', handleFormSubmit);
+
+        // グローバルスコープでdeleteReport関数を利用可能にする
+        window.deleteReport = deleteReport;
 
     </script>
 </body>
