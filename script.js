@@ -204,7 +204,10 @@ class OrderFormManager {
 
         // PDF生成 & メール送信ボタン
         const generateAndEmailBtn = document.getElementById('generateAndEmailBtn');
+        console.log('generateAndEmailBtn 検索結果:', generateAndEmailBtn);
+        
         if (generateAndEmailBtn) {
+            console.log('generateAndEmailBtn が見つかりました。イベントリスナーを設定します。');
             generateAndEmailBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
                 console.log('PDF生成 & メール送信ボタンがクリックされました');
@@ -226,6 +229,7 @@ class OrderFormManager {
             console.log('PDF生成 & メール送信ボタンのイベントリスナーを設定しました');
         } else {
             console.error('generateAndEmailBtn が見つかりません');
+            console.log('現在のDOM状態:', document.body.innerHTML.substring(0, 1000));
         }
 
 
@@ -1094,16 +1098,26 @@ class OrderFormManager {
     }
 
     async generatePDF() {
+        console.log('generatePDF メソッド開始');
+        
         // PDF生成&メール送信ボタンを取得（generatePdfBtnは削除済み）
         const generateBtn = document.getElementById('generateAndEmailBtn');
-        const originalText = generateBtn ? generateBtn.textContent : 'PDF生成 & メール送信';
+        console.log('generateBtn:', generateBtn);
+        
+        // ボタンが見つからない場合のエラーハンドリング
+        if (!generateBtn) {
+            console.error('generateAndEmailBtn ボタンが見つかりません');
+            console.log('現在のDOM状態:', document.body.innerHTML.substring(0, 500));
+            throw new Error('PDF生成ボタンが見つかりません');
+        }
+        
+        const originalText = generateBtn.textContent;
+        console.log('originalText:', originalText);
         
         try {
-            if (generateBtn) {
-                generateBtn.textContent = 'PDF生成中...';
-                generateBtn.classList.add('loading');
-                generateBtn.disabled = true;
-            }
+            generateBtn.textContent = 'PDF生成中...';
+            generateBtn.classList.add('loading');
+            generateBtn.disabled = true;
             
             // プレビューを表示してからPDF生成
             this.showPreview();
@@ -1230,11 +1244,10 @@ class OrderFormManager {
             console.error('PDF生成エラー:', error);
             alert('PDF生成中にエラーが発生しました: ' + error.message + '\n\n詳細はコンソールを確認してください。');
         } finally {
-            if (generateBtn) {
-                generateBtn.textContent = originalText;
-                generateBtn.classList.remove('loading');
-                generateBtn.disabled = false;
-            }
+            // ボタンの状態を復元
+            generateBtn.textContent = originalText;
+            generateBtn.classList.remove('loading');
+            generateBtn.disabled = false;
         }
     }
 
