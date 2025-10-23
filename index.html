@@ -3,67 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
     <title>諸鹿彩色 社内ポータル</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
-            /* 読みやすいフォント設定 */
             font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f4f7f6;
+        }
+        .header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .logo-text {
+            color: #333;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        .accent-color {
+            color: #e94615;
+        }
+        .tool-card {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07);
+        }
+        .tool-card a {
+            text-decoration: none;
+            color: inherit;
+        }
+        .tool-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fdf2f0; /* Accent color light bg */
+        }
+        .tool-icon svg {
+            color: #e94615; /* Accent color */
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body>
 
-    <header class="bg-white shadow-md">
-        <nav class="container mx-auto px-6 py-4">
-            <h1 class="text-3xl font-bold text-gray-800">
-                諸鹿彩色 社内ポータル
-            </h1>
-            <p class="text-gray-600">現場作業の効率化と情報共有のために</p>
-        </nav>
-    </header>
+    <!-- ヘッダー -->
+        <header class="header">
+        <div class="container mx-auto px-6 py-4">
+            <h1 class="logo-text">諸鹿<span class="accent-color">彩色</span> 社内ポータル</h1>
+            </div>
+        </header>
 
-    <main class="container mx-auto px-6 py-8">
-        
-        <!-- 業務効率化ツール -->
-        <section>
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">業務効率化ツール</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- メインコンテンツ -->
+    <main class="container mx-auto px-6 py-10">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">業務効率化ツール</h2>
 
-                <!-- (変更) ツール 1: 2液塗料 混合計算 -->
-                <!-- (変更) リンク先を 'coating_jotform_mixer_calculator.html' に更新 -->
-                <a href="coating_jotform_mixer_calculator.html" class="block bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                    <div class="p-6">
-                        <!-- (変更) アイコンの色をアクセントカラー(#e94615)に -->
-                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-[#e94615] text-white mb-4">
-                            <!-- 電卓アイコン (Heroicons) -->
-                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008Zm0 3h.008v.008H8.25v-.008Zm0 3h.008v.008H8.25v-.008Zm3-6h.008v.008H11.25v-.008Zm0 3h.008v.008H11.25v-.008Zm0 3h.008v.008H11.25v-.008Zm3-6h.008v.008H14.25v-.008Zm0 3h.008v.008H14.25v-.008Zm0 3h.008v.008H14.25v-.008Zm3-11.25a.75.75 0 0 1 .75.75v14.25a.75.75 0 0 1-.75.75H7.5a.75.75 0 0 1-.75-.75V7.5a.75.75 0 0 1 .75-.75h9.75Z" />
+        <!-- ツールグリッド -->
+        <!-- (変更) sm:grid-cols-2 を追加して、2列に並ぶようにしました -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+            <!-- ツールカード 1: 2液塗料 混合計算 -->
+            <div class="tool-card">
+                <a href="coating_jotform_mixer_calculator.html" class="block p-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="tool-icon">
+                            <!-- アイコン: Beaker (ビーカー) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.66.538-1.192 1.2-1.192h.013c.662 0 1.2.532 1.2 1.192v.013c0 .66-.538 1.192-1.2 1.192h-.013A1.2 1.2 0 0114.25 6.087v-.013zM4.5 12.75l.006.006 0 0h14.988l.006-.006 0 0C19.5 13.06 19.24 14.1 18.11 15.11l-1.02 1.02a.75.75 0 000 1.06l.163.163m-1.3-1.428l-1.011 1.01a.75.75 0 01-1.06 0l-1.01-1.01a.75.75 0 00-1.06 0l-1.01 1.01a.75.75 0 01-1.06 0l-1.01-1.01a.75.75 0 00-1.06 0l-1.01 1.01a.75.75 0 01-1.06 0l-1.01-1.01m1.3 1.428l1.01-1.01a.75.75 0 011.06 0l1.01 1.01a.75.75 0 001.06 0l1.01-1.01a.75.75 0 011.06 0l1.01 1.01a.75.75 0 001.06 0l1.01-1.01a.75.75 0 011.06 0l1.01 1.01m-1.3-1.428l-1.01 1.01a.75.75 0 01-1.06 0l-1.01-1.01a.75.75 0 00-1.06 0l-1.01 1.01a.75.75 0 01-1.06 0l-1.01-1.01a.75.75 0 00-1.06 0l-1.01 1.01a.75.75 0 01-1.06 0l-1.01-1.01a.75.75 0 00-1.06 0l-1.01 1.01" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25m0 0V6.75A2.25 2.25 0 0114.25 4.5h.013c.662 0 1.2.532 1.2 1.192v.013c0 .66-.538 1.192-1.2 1.192h-.013A2.25 2.25 0 0112 9.75V12.75zm0 0l-2.67-3.116A2.25 2.25 0 007.06 9h-.014c-.662 0-1.2.532-1.2 1.192v.013c0 .66.538 1.192 1.2 1.192h.014a2.25 2.25 0 002.228.718L12 12.75z" />
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">2液塗料 混合計算</h3>
-                        <!-- (変更) 説明文を最新の機能に合わせる -->
-                        <p class="text-gray-600">セット重量から比率を計算し、作成したい総重量から必要な主剤・硬化剤の量を割り出します。</p>
-                    </div>
-                    <div class="bg-gray-50 px-6 py-3">
-                        <!-- (変更) テキストの色をアクセントカラーに -->
-                        <span class="text-[#e94615] font-medium">ツールを開く &rarr;</span>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">2液塗料 混合計算</h3>
+                            <p class="text-gray-500 text-sm">総重量から主剤と硬化剤の必要量を計算します。</p>
+                        </div>
                     </div>
                 </a>
-
-                <!-- ここに新しいツールカードを追加できます -->
-                <!-- 
-                <a href="#" class="block bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                    <div class="p-6">
-                        ...
+                        </div>
+                        
+            <!-- (新設) ツールカード 2: 日報投稿アプリ -->
+            <div class="tool-card">
+                <a href="nippou_app.html" class="block p-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="tool-icon">
+                            <!-- アイコン: Clipboard List (クリップボードリスト) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">日報投稿アプリ</h3>
+                            <p class="text-gray-500 text-sm">交通費やETC代を記録・投稿します。</p>
+                        </div>
                     </div>
                 </a>
-                -->
-
             </div>
-        </section>
 
+            <!-- 新しいツールができたら、ここにカードを追加していきます -->
+
+        </div>
     </main>
 
 </body>
