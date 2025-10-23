@@ -106,9 +106,16 @@
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp, getDocs, limit, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // グローバル変数から設定を取得
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        // (変更) スプレッドシートとIDを統一します
+        // Firebase設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9LpMfQxOxcmIxWiumm7CPIj3rufEb2LU",
+            authDomain: "innate-empire-476004-h4.firebaseapp.com",
+            projectId: "innate-empire-476004-h4",
+            storageBucket: "innate-empire-476004-h4.firebasestorage.app",
+            messagingSenderId: "47039702957",
+            appId: "1:47039702957:web:9e7ec2ec375d731fa1a324",
+            measurementId: "G-REQN0QFS2M"
+        };
         const appId = 'default-app-id'; 
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
