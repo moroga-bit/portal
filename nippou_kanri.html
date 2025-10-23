@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日報管理 - 諸鹿彩色</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+        }
+        .main-wrapper {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="main-wrapper bg-white rounded-lg shadow-lg">
+        <!-- 戻るボタン -->
+        <div class="mb-4">
+            <a href="index.html" class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                トップページに戻る
+            </a>
+        </div>
+
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">日報管理</h1>
+        <p class="text-center text-gray-500 mb-6">月次集計と一覧表示</p>
+
+        <!-- 月選択 -->
+        <div class="mb-6 flex items-center gap-4">
+            <label for="month-select" class="text-lg font-medium text-gray-700">対象月:</label>
+            <input type="month" id="month-select" class="p-2 border border-gray-300 rounded-lg">
+            <button id="load-btn" class="bg-[#e94615] hover:bg-[#d33f13] text-white font-bold py-2 px-6 rounded-lg transition duration-300">
+                読み込み
+            </button>
+            <button id="csv-export-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
+                CSV出力
+            </button>
+        </div>
+
+        <!-- ローディング -->
+        <div id="loading" class="hidden text-center py-8">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#e94615]"></div>
+            <p class="mt-2 text-gray-600">データを読み込んでいます...</p>
+        </div>
+
+        <!-- エラーメッセージ -->
+        <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"></div>
+
+        <!-- 集計サマリー -->
+        <div id="summary-section" class="hidden mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">📊 月次サマリー</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <p class="text-sm text-gray-600">投稿件数</p>
+                    <p class="text-3xl font-bold text-blue-600" id="total-count">0</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <p class="text-sm text-gray-600">交通費合計</p>
+                    <p class="text-3xl font-bold text-green-600">¥<span id="total-transport">0</span></p>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                    <p class="text-sm text-gray-600">ETC合計</p>
+                    <p class="text-3xl font-bold text-orange-600">¥<span id="total-etc">0</span></p>
+                </div>
+            </div>
+
+            <!-- 作業員別集計 -->
+            <h3 class="text-xl font-semibold text-gray-700 mb-3">👥 作業員別集計</h3>
+            <div class="overflow-x-auto mb-6">
+                <table class="min-w-full bg-white border border-gray-300">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-2 px-4 border-b text-left">作業員名</th>
+                            <th class="py-2 px-4 border-b text-right">投稿回数</th>
+                            <th class="py-2 px-4 border-b text-right">交通費合計</th>
+                            <th class="py-2 px-4 border-b text-right">ETC合計</th>
+                            <th class="py-2 px-4 border-b text-right">合計</th>
+                        </tr>
+                    </thead>
+                    <tbody id="worker-summary-body">
+                        <!-- データがここに挿入されます -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- グラフ -->
+            <h3 class="text-xl font-semibold text-gray-700 mb-3">📈 グラフ</h3>
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                <canvas id="workerChart" height="80"></canvas>
+            </div>
+        </div>
+
+        <!-- 日報一覧 -->
+        <div id="report-list-section" class="hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">📋 日報一覧</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-300">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-2 px-4 border-b text-left">日付</th>
+                            <th class="py-2 px-4 border-b text-left">作業員</th>
+                            <th class="py-2 px-4 border-b text-left">同行者</th>
+                            <th class="py-2 px-4 border-b text-right">交通費</th>
+                            <th class="py-2 px-4 border-b text-right">ETC</th>
+                            <th class="py-2 px-4 border-b text-right">合計</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-list-body">
+                        <!-- データがここに挿入されます -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9LpMfQxOxcmIxWiumm7CPIj3rufEb2LU",
+            authDomain: "innate-empire-476004-h4.firebaseapp.com",
+            projectId: "innate-empire-476004-h4",
+            storageBucket: "innate-empire-476004-h4.firebasestorage.app",
+            messagingSenderId: "47039702957",
+            appId: "1:47039702957:web:9e7ec2ec375d731fa1a324",
+            measurementId: "G-REQN0QFS2M"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = 'default-app-id';
+        const collectionPath = `artifacts/${appId}/public/data/daily_reports`;
+
+        // DOM要素
+        const monthSelect = document.getElementById('month-select');
+        const loadBtn = document.getElementById('load-btn');
+        const csvExportBtn = document.getElementById('csv-export-btn');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('error-message');
+        const summarySection = document.getElementById('summary-section');
+        const reportListSection = document.getElementById('report-list-section');
+        const totalCount = document.getElementById('total-count');
+        const totalTransport = document.getElementById('total-transport');
+        const totalEtc = document.getElementById('total-etc');
+        const workerSummaryBody = document.getElementById('worker-summary-body');
+        const reportListBody = document.getElementById('report-list-body');
+
+        let currentData = [];
+        let workerChart = null;
+
+        // 今月をデフォルト値に設定
+        function setDefaultMonth() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            monthSelect.value = `${yyyy}-${mm}`;
+        }
+
+        // データ読み込み
+        async function loadData() {
+            const selectedMonth = monthSelect.value;
+            if (!selectedMonth) {
+                showError('月を選択してください。');
+                return;
+            }
+
+            hideError();
+            loading.classList.remove('hidden');
+            summarySection.classList.add('hidden');
+            reportListSection.classList.add('hidden');
+
+            try {
+                const q = query(collection(db, collectionPath));
+                const querySnapshot = await getDocs(q);
+
+                currentData = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const reportDate = data.reportDate;
+                    
+                    // 選択された月のデータのみフィルタリング
+                    if (reportDate && reportDate.startsWith(selectedMonth)) {
+                        currentData.push(data);
+                    }
+                });
+
+                if (currentData.length === 0) {
+                    showError('選択された月のデータがありません。');
+                    loading.classList.add('hidden');
+                    return;
+                }
+
+                // データを日付順にソート
+                currentData.sort((a, b) => {
+                    return new Date(a.reportDate) - new Date(b.reportDate);
+                });
+
+                displaySummary();
+                displayReportList();
+                
+                loading.classList.add('hidden');
+                summarySection.classList.remove('hidden');
+                reportListSection.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('データ読み込みエラー:', error);
+                showError('データの読み込みに失敗しました: ' + error.message);
+                loading.classList.add('hidden');
+            }
+        }
+
+        // サマリー表示
+        function displaySummary() {
+            // 全体集計
+            let totalTransportCost = 0;
+            let totalEtcCost = 0;
+
+            currentData.forEach(item => {
+                totalTransportCost += parseInt(item.transportCost || 0);
+                totalEtcCost += parseInt(item.etcCost || 0);
+            });
+
+            totalCount.textContent = currentData.length;
+            totalTransport.textContent = totalTransportCost.toLocaleString();
+            totalEtc.textContent = totalEtcCost.toLocaleString();
+
+            // 作業員別集計
+            const workerStats = {};
+            currentData.forEach(item => {
+                const worker = item.workerName || '不明';
+                if (!workerStats[worker]) {
+                    workerStats[worker] = {
+                        count: 0,
+                        transport: 0,
+                        etc: 0
+                    };
+                }
+                workerStats[worker].count++;
+                workerStats[worker].transport += parseInt(item.transportCost || 0);
+                workerStats[worker].etc += parseInt(item.etcCost || 0);
+            });
+
+            // テーブル表示
+            workerSummaryBody.innerHTML = '';
+            Object.keys(workerStats).sort().forEach(worker => {
+                const stats = workerStats[worker];
+                const total = stats.transport + stats.etc;
+                const row = `
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-2 px-4 border-b">${worker}</td>
+                        <td class="py-2 px-4 border-b text-right">${stats.count}回</td>
+                        <td class="py-2 px-4 border-b text-right">¥${stats.transport.toLocaleString()}</td>
+                        <td class="py-2 px-4 border-b text-right">¥${stats.etc.toLocaleString()}</td>
+                        <td class="py-2 px-4 border-b text-right font-bold">¥${total.toLocaleString()}</td>
+                    </tr>
+                `;
+                workerSummaryBody.innerHTML += row;
+            });
+
+            // グラフ表示
+            displayChart(workerStats);
+        }
+
+        // グラフ表示
+        function displayChart(workerStats) {
+            const ctx = document.getElementById('workerChart');
+            
+            if (workerChart) {
+                workerChart.destroy();
+            }
+
+            const labels = Object.keys(workerStats).sort();
+            const transportData = labels.map(w => workerStats[w].transport);
+            const etcData = labels.map(w => workerStats[w].etc);
+
+            workerChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '交通費',
+                            data: transportData,
+                            backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                            borderColor: 'rgb(34, 197, 94)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'ETC',
+                            data: etcData,
+                            backgroundColor: 'rgba(249, 115, 22, 0.7)',
+                            borderColor: 'rgb(249, 115, 22)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '¥' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 日報一覧表示
+        function displayReportList() {
+            reportListBody.innerHTML = '';
+            currentData.forEach(item => {
+                const transport = parseInt(item.transportCost || 0);
+                const etc = parseInt(item.etcCost || 0);
+                const total = transport + etc;
+                const companions = item.companions && item.companions.length > 0 
+                    ? item.companions.join(', ') 
+                    : '-';
+
+                const row = `
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-2 px-4 border-b">${item.reportDate}</td>
+                        <td class="py-2 px-4 border-b">${item.workerName || '-'}</td>
+                        <td class="py-2 px-4 border-b text-sm">${companions}</td>
+                        <td class="py-2 px-4 border-b text-right">¥${transport.toLocaleString()}</td>
+                        <td class="py-2 px-4 border-b text-right">¥${etc.toLocaleString()}</td>
+                        <td class="py-2 px-4 border-b text-right font-bold">¥${total.toLocaleString()}</td>
+                    </tr>
+                `;
+                reportListBody.innerHTML += row;
+            });
+        }
+
+        // CSV出力
+        function exportCSV() {
+            if (currentData.length === 0) {
+                showError('出力するデータがありません。');
+                return;
+            }
+
+            const headers = ['日付', '作業員名', '同行者', '交通費', 'ETC', '合計'];
+            const rows = currentData.map(item => {
+                const transport = parseInt(item.transportCost || 0);
+                const etc = parseInt(item.etcCost || 0);
+                const total = transport + etc;
+                const companions = item.companions && item.companions.length > 0 
+                    ? item.companions.join('・') 
+                    : '';
+                
+                return [
+                    item.reportDate,
+                    item.workerName || '',
+                    companions,
+                    transport,
+                    etc,
+                    total
+                ];
+            });
+
+            let csv = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csv += row.join(',') + '\n';
+            });
+
+            // BOM付きでUTF-8エンコード
+            const bom = '\uFEFF';
+            const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            const selectedMonth = monthSelect.value;
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `日報_${selectedMonth}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // エラー表示
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        function hideError() {
+            errorMessage.classList.add('hidden');
+        }
+
+        // イベントリスナー
+        loadBtn.addEventListener('click', loadData);
+        csvExportBtn.addEventListener('click', exportCSV);
+
+        // 初期化
+        setDefaultMonth();
+        
+        // 匿名認証
+        signInAnonymously(auth).catch((error) => {
+            console.error('認証エラー:', error);
+            showError('認証に失敗しました。ページを再読み込みしてください。');
+        });
+
+    </script>
+</body>
+</html>
+
