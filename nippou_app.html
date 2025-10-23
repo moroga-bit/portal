@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日報投稿アプリ - 諸鹿彩色</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+        }
+        .main-wrapper {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        /* 入力欄の右側に「円」を表示するためのスタイル */
+        .currency-input {
+            position: relative;
+        }
+        .currency-input span {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280; /* text-gray-500 */
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="main-wrapper bg-white rounded-lg shadow-lg">
+        <!-- 戻るボタン -->
+        <div class="mb-4">
+            <a href="index.html" class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                トップページに戻る
+            </a>
+        </div>
+
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">日報投稿</h1>
+        <p class="text-center text-gray-500 mb-6">交通費とETC代を記録します。</p>
+        
+        <p class="text-center text-sm text-gray-500 mb-6">
+            あなたのUserID: <span id="user-id-display" class="font-medium text-gray-700">読み込み中...</span>
+        </p>
+
+        <!-- 日報投稿フォーム -->
+        <form id="report-form" class="space-y-4">
+            
+            <div>
+                <label for="worker-name" class="block text-sm font-medium text-gray-700 mb-1">作業員名</label>
+                <select id="worker-name" class="w-full p-3 border border-gray-300 rounded-lg bg-white">
+                    <option value="">-- 選択してください --</option>
+                    <!-- オプションはJSで追加されます -->
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">同行者（複数選択可）</label>
+                <div id="companions-list" class="mt-2 space-y-1 p-3 border border-gray-300 rounded-lg bg-white max-h-32 overflow-y-auto">
+                    <!-- チェックボックスはJSで追加されます -->
+                </div>
+            </div>
+
+            <div>
+                <label for="report-date" class="block text-sm font-medium text-gray-700 mb-1">今日の日付</label>
+                <input type="date" id="report-date" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50" readonly>
+            </div>
+            
+            <div class="currency-input">
+                <label for="transport-cost" class="block text-sm font-medium text-gray-700 mb-1">交通費</label>
+                <input type="number" id="transport-cost" placeholder="例: 500" class="w-full p-3 border border-gray-300 rounded-lg pr-12">
+                <span>円</span>
+            </div>
+            
+            <div class="currency-input">
+                <label for="etc-cost" class="block text-sm font-medium text-gray-700 mb-1">ETC</label>
+                <input type="number" id="etc-cost" placeholder="例: 1200" class="w-full p-3 border border-gray-300 rounded-lg pr-12">
+                <span>円</span>
+            </div>
+            
+            <button type="submit" id="submit-button" class="w-full bg-[#e94615] hover:bg-[#d33f13] text-white font-bold py-3 px-4 rounded-lg text-lg transition duration-300 disabled:opacity-50">
+                投稿する
+            </button>
+        </form>
+
+        <!-- 投稿履歴 -->
+        <div class="mt-10">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">あなたの投稿履歴（最新5件）</h2>
+            <div id="report-history" class="space-y-3">
+                <p class="text-gray-500 text-center">まだ投稿がありません。</p>
+                <!-- 履歴はJSによってここに挿入されます -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module">
+        // Firebase SDK のインポート
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp, getDocs, limit, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // グローバル変数から設定を取得
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Firebase アプリの初期化
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- グローバル変数 ---
+        let currentUserId = null;
+        const reportForm = document.getElementById('report-form');
+        const reportDateInput = document.getElementById('report-date');
+        const transportCostInput = document.getElementById('transport-cost');
+        const etcCostInput = document.getElementById('etc-cost');
+        const submitButton = document.getElementById('submit-button');
+        const reportHistory = document.getElementById('report-history');
+        const userIdDisplay = document.getElementById('user-id-display');
+        const workerNameSelect = document.getElementById('worker-name');
+        const companionsListDiv = document.getElementById('companions-list');
+
+        // 作業員リスト（今後、DBから取得するなど拡張可能）
+        const workerList = ['諸鹿A', '諸鹿B', '職人C', '職人D', '職人E', 'その他'];
+        
+        // データベースのパス
+        const collectionPath = `artifacts/${appId}/public/data/daily_reports`;
+
+        // --- 関数 ---
+
+        /**
+         * 今日の日付を YYYY-MM-DD 形式で取得し、日付入力欄に設定する
+         */
+        function setTodayDate() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0'); // 月は0から始まるため+1
+            const dd = String(today.getDate()).padStart(2, '0');
+            reportDateInput.value = `${yyyy}-${mm}-${dd}`;
+        }
+
+        /**
+         * 作業員リストをフォームに設定する
+         */
+        function populateWorkerList() {
+            // 作業員名ドロップダウン
+            workerList.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                workerNameSelect.appendChild(option);
+            });
+
+            // 同行者チェックボックス
+            workerList.forEach(name => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center';
+                
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.id = `companion-${name}`;
+                input.value = name;
+                input.className = 'h-4 w-4 text-[#e94615] border-gray-300 rounded focus:ring-[#e94615]';
+                
+                const label = document.createElement('label');
+                label.htmlFor = `companion-${name}`;
+                label.textContent = name;
+                label.className = 'ml-2 block text-sm text-gray-900';
+                
+                div.appendChild(input);
+                div.appendChild(label);
+                companionsListDiv.appendChild(div);
+            });
+        }
+
+        /**
+         * フォーム送信（日報投稿）処理
+         */
+        async function handleFormSubmit(e) {
+            e.preventDefault(); // デフォルトのフォーム送信をキャンセル
+            if (!currentUserId) {
+                console.error('ユーザー認証が完了していません。');
+                return;
+            }
+
+            const workerName = workerNameSelect.value;
+            if (!workerName) {
+                alert('作業員名を選択してください。');
+                return;
+            }
+
+            // 選択された同行者を取得
+            const selectedCompanions = [];
+            companionsListDiv.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                selectedCompanions.push(checkbox.value);
+            });
+
+            // フォームデータをオブジェクトにまとめる
+            const reportData = {
+                userId: currentUserId,
+                workerName: workerName,
+                companions: selectedCompanions,
+                reportDate: reportDateInput.value,
+                transportCost: transportCostInput.value || '0', // 未入力の場合は '0'
+                etcCost: etcCostInput.value || '0', // 未入力の場合は '0'
+                createdAt: serverTimestamp() // サーバー側のタイムスタンプ
+            };
+
+            submitButton.disabled = true;
+            submitButton.textContent = '投稿中...';
+
+            try {
+                // スプレッドシート連携のため、共有コレクションに保存
+                const docRef = await addDoc(collection(db, collectionPath), reportData);
+                console.log("ドキュメントが追加されました。ID: ", docRef.id);
+                
+                // フォームをリセット
+                reportForm.reset();
+                setTodayDate(); // 日付を今日に再設定
+                companionsListDiv.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+            } catch (error) {
+                console.error("データの追加中にエラーが発生しました: ", error);
+                alert('投稿に失敗しました。');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = '投稿する';
+            }
+        }
+
+        /**
+         * 投稿履歴をFirestoreから読み込み、表示する
+         */
+        function subscribeToHistory(userId) {
+            if (!userId) return;
+
+            // 共有コレクションから、自分のuserIdを持つドキュメントを検索
+            // (変更) orderBy("createdAt") を削除してインデックスエラーを回避
+            // データはJS側でソートする
+            const q = query(
+                collection(db, collectionPath),
+                where("userId", "==", userId)
+                // orderBy("createdAt", "desc"), // ← インデックスエラーの原因
+                // limit(5) // ← JSでソート・limitするため、ここでlimitしない
+            );
+
+            onSnapshot(q, (querySnapshot) => {
+                if (querySnapshot.empty) {
+                    reportHistory.innerHTML = '<p class="text-gray-500 text-center">まだ投稿がありません。</p>';
+                    return;
+                }
+
+                reportHistory.innerHTML = ''; // 履歴をクリア
+                
+                // (新設) JSでデータをソート
+                const documents = [];
+                querySnapshot.forEach((doc) => {
+                    documents.push(doc.data());
+                });
+
+                // createdAtで降順ソート (新しいものが先)
+                documents.sort((a, b) => {
+                    const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0);
+                    const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
+                    return dateB - dateA; // 降順
+                });
+
+                // (新設) 上位5件のみ表示
+                const top5Documents = documents.slice(0, 5);
+
+                top5Documents.forEach((data) => {
+                    const dt = data.createdAt ? data.createdAt.toDate() : new Date();
+                    const formattedDate = `${dt.getFullYear()}/${String(dt.getMonth() + 1).padStart(2, '0')}/${String(dt.getDate()).padStart(2, '0')}`;
+                    
+                    const companionsText = data.companions && data.companions.length > 0
+                        ? `同行者: ${data.companions.join(', ')}`
+                        : '同行者: なし';
+
+                    const historyItem = `
+                        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-semibold text-gray-800">${data.reportDate}</span>
+                                <span class="text-sm text-gray-500">${formattedDate}</span>
+                            </div>
+                            <p class="text-sm text-gray-700">作業員: ${data.workerName || '未指定'}</p>
+                            <p class="text-sm text-gray-700">${companionsText}</p>
+                            <div class="mt-2 pt-2 border-t border-gray-200">
+                                <p class="text-sm text-gray-600">交通費: ${data.transportCost} 円</p>
+                                <p class="text-sm text-gray-600">ETC: ${data.etcCost} 円</p>
+                            </div>
+                        </div>
+                    `;
+                    reportHistory.innerHTML += historyItem;
+                });
+            }, (error) => {
+                console.error("履歴の読み込み中にエラーが発生しました: ", error);
+                reportHistory.innerHTML = '<p class="text-red-500 text-center">履歴の読み込みに失敗しました。</p>';
+            });
+        }
+
+        // --- 初期化処理 ---
+
+        // 認証状態の監視
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // ユーザーが認証済み
+                console.log("認証成功:", user.uid);
+                currentUserId = user.uid;
+                userIdDisplay.textContent = currentUserId;
+                
+                // 履歴の監視を開始
+                subscribeToHistory(currentUserId);
+                
+                // フォームを有効化
+                submitButton.disabled = false;
+            } else {
+                // ユーザーが未認証
+                console.log("未認証。");
+                currentUserId = null;
+                userIdDisplay.textContent = '未認証';
+                submitButton.disabled = true; // 未認証時は投稿不可
+            }
+        });
+
+        // 匿名認証の試行
+        (async () => {
+            try {
+                if (initialAuthToken) {
+                    console.log("カスタムトークンでサインインします...");
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    console.log("匿名でサインインします...");
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("認証エラー:", error);
+                userIdDisplay.textContent = '認証エラー';
+            }
+        })();
+
+        // 今日の日付をセット
+        setTodayDate();
+
+        // 作業員リストをフォームにセット
+        populateWorkerList();
+
+        // フォーム送信イベントリスナーを設定
+        reportForm.addEventListener('submit', handleFormSubmit);
+
+    </script>
+</body>
+</html>
+
