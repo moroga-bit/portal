@@ -53,6 +53,11 @@
         <form id="report-form" class="space-y-4">
             
             <div>
+                <label for="site-name" class="block text-sm font-medium text-gray-700 mb-1">現場名</label>
+                <input type="text" id="site-name" placeholder="例: 〇〇ビル建設現場" class="w-full p-3 border border-gray-300 rounded-lg">
+            </div>
+
+            <div>
                 <label for="worker-name" class="block text-sm font-medium text-gray-700 mb-1">作業員名</label>
                 <select id="worker-name" class="w-full p-3 border border-gray-300 rounded-lg bg-white">
                     <option value="">-- 選択してください --</option>
@@ -143,6 +148,7 @@
         // --- グローバル変数 ---
         let currentUserId = null;
         const reportForm = document.getElementById('report-form');
+        const siteNameInput = document.getElementById('site-name');
         const reportDateInput = document.getElementById('report-date');
         const transportCostInput = document.getElementById('transport-cost');
         const etcCostInput = document.getElementById('etc-cost');
@@ -221,6 +227,12 @@
                 return;
             }
 
+            const siteName = siteNameInput.value.trim();
+            if (!siteName) {
+                alert('現場名を入力してください。');
+                return;
+            }
+
             const workerName = workerNameSelect.value;
             if (!workerName) {
                 // カスタムアラート（もしあれば）
@@ -237,6 +249,7 @@
             // フォームデータをオブジェクトにまとめる
             const reportData = {
                 userId: currentUserId,
+                siteName: siteName,
                 workerName: workerName,
                 companions: selectedCompanions,
                 reportDate: reportDateInput.value,
@@ -337,6 +350,7 @@
                                 <span class="font-semibold text-gray-800">${data.reportDate}</span>
                                 <span class="text-sm text-gray-500">${formattedDate}</span>
                             </div>
+                            <p class="text-sm text-gray-700 font-medium">現場名: ${data.siteName || '未指定'}</p>
                             <p class="text-sm text-gray-700">作業員: ${data.workerName || '未指定'}</p>
                             <p class="text-sm text-gray-700">${companionsText}</p>
                             <div class="mt-2 pt-2 border-t border-gray-200">
