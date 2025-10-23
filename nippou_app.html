@@ -108,7 +108,8 @@
 
         // グローバル変数から設定を取得
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // (変更) スプレッドシートとIDを統一します
+        const appId = 'default-app-id'; 
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         // Firebase アプリの初期化
@@ -193,6 +194,7 @@
 
             const workerName = workerNameSelect.value;
             if (!workerName) {
+                // カスタムアラート（もしあれば）
                 alert('作業員名を選択してください。');
                 return;
             }
@@ -231,6 +233,7 @@
                 
             } catch (error) {
                 console.error("データの追加中にエラーが発生しました: ", error);
+                // カスタムアラート（もしあれば）
                 alert('投稿に失敗しました。');
             } finally {
                 submitButton.disabled = false;
@@ -244,14 +247,15 @@
         function subscribeToHistory(userId) {
             if (!userId) return;
 
-            // 共有コレクションから、自分のuserIdを持つドキュメントを検索
-            // (変更) orderBy("createdAt") を削除してインデックスエラーを回避
-            // データはJS側でソートする
+            // (変更) 'where' 句を削除し、インデックスエラーと権限エラーを回避
+            //     ルール (allow read: if request.auth != null;) で
+            //     コレクション全体へのreadを許可しているため、where句は使えない。
+            //     データはJS側でフィルタリング＆ソートする。
             const q = query(
-                collection(db, collectionPath),
-                where("userId", "==", userId)
-                // orderBy("createdAt", "desc"), // ← インデックスエラーの原因
-                // limit(5) // ← JSでソート・limitするため、ここでlimitしない
+                collection(db, collectionPath)
+                // where("userId", "==", userId), // ← 権限エラーの原因
+                // orderBy("createdAt", "desc"), 
+                // limit(5)
             );
 
             onSnapshot(q, (querySnapshot) => {
@@ -259,16 +263,24 @@
                     reportHistory.innerHTML = '<p class="text-gray-500 text-center">まだ投稿がありません。</p>';
                     return;
                 }
-
-                reportHistory.innerHTML = ''; // 履歴をクリア
                 
-                // (新設) JSでデータをソート
                 const documents = [];
                 querySnapshot.forEach((doc) => {
-                    documents.push(doc.data());
+                    // (新設) 取得した全データから、自分のuserIdのものだけをフィルタリング
+                    const data = doc.data();
+                    if (data.userId === userId) {
+                        documents.push(data);
+                    }
                 });
 
-                // createdAtで降順ソート (新しいものが先)
+                if (documents.length === 0) {
+                    reportHistory.innerHTML = '<p class="text-gray-500 text-center">あなたの投稿はまだありません。</p>';
+                    return;
+                }
+
+                reportHistory.innerHTML = ''; // 履歴をクリア
+
+                // (新設) JSでデータをソート (createdAtで降順ソート = 新しいものが先)
                 documents.sort((a, b) => {
                     const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0);
                     const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
