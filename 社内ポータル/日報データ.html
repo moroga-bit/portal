@@ -27,6 +27,36 @@
             color: #6b7280; /* text-gray-500 */
             pointer-events: none;
         }
+        
+        /* 現場名オートコンプリート用のスタイル */
+        .site-name-container {
+            position: relative;
+        }
+        .site-name-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-top: none;
+            border-radius: 0 0 0.5rem 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+        }
+        .site-name-suggestion {
+            padding: 0.75rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .site-name-suggestion:hover {
+            background-color: #f9fafb;
+        }
+        .site-name-suggestion:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -42,9 +72,10 @@
         <!-- 日報投稿フォーム -->
         <form id="report-form" class="space-y-4">
             
-            <div>
+            <div class="site-name-container">
                 <label for="site-name" class="block text-sm font-medium text-gray-700 mb-1">現場名</label>
-                <input type="text" id="site-name" placeholder="例: 〇〇ビル建設現場" class="w-full p-3 border border-gray-300 rounded-lg">
+                <input type="text" id="site-name" placeholder="例: 〇〇ビル建設現場" class="w-full p-3 border border-gray-300 rounded-lg" autocomplete="off">
+                <div id="site-name-suggestions" class="site-name-suggestions"></div>
             </div>
 
             <div>
@@ -115,6 +146,7 @@
         let currentUserId = null;
         const reportForm = document.getElementById('report-form');
         const siteNameInput = document.getElementById('site-name');
+        const siteNameSuggestions = document.getElementById('site-name-suggestions');
         const reportDateInput = document.getElementById('report-date');
         const transportCostInput = document.getElementById('transport-cost');
         const etcCostInput = document.getElementById('etc-cost');
@@ -129,6 +161,69 @@
         
         // データベースのパス
         const collectionPath = `artifacts/${appId}/public/data/daily_reports`;
+
+        // 現場名の記憶・オートコンプリート機能
+        const SITE_NAME_STORAGE_KEY = 'siteNameHistory';
+        
+        /**
+         * 現場名の履歴をローカルストレージから取得
+         */
+        function getSiteNameHistory() {
+            try {
+                const history = localStorage.getItem(SITE_NAME_STORAGE_KEY);
+                return history ? JSON.parse(history) : [];
+            } catch (error) {
+                console.error('現場名履歴の取得エラー:', error);
+                return [];
+            }
+        }
+
+        /**
+         * 現場名の履歴をローカルストレージに保存
+         */
+        function saveSiteNameHistory(siteName) {
+            try {
+                let history = getSiteNameHistory();
+                // 重複を削除
+                history = history.filter(name => name !== siteName);
+                // 先頭に追加（最新が先頭）
+                history.unshift(siteName);
+                // 最大20件まで保存
+                history = history.slice(0, 20);
+                localStorage.setItem(SITE_NAME_STORAGE_KEY, JSON.stringify(history));
+            } catch (error) {
+                console.error('現場名履歴の保存エラー:', error);
+            }
+        }
+
+        /**
+         * 現場名の候補を表示
+         */
+        function showSiteNameSuggestions(query) {
+            const history = getSiteNameHistory();
+            const filtered = history.filter(name => 
+                name.toLowerCase().includes(query.toLowerCase())
+            );
+
+            if (filtered.length === 0 || query.length === 0) {
+                siteNameSuggestions.style.display = 'none';
+                return;
+            }
+
+            siteNameSuggestions.innerHTML = '';
+            filtered.slice(0, 10).forEach(name => {
+                const div = document.createElement('div');
+                div.className = 'site-name-suggestion';
+                div.textContent = name;
+                div.addEventListener('click', () => {
+                    siteNameInput.value = name;
+                    siteNameSuggestions.style.display = 'none';
+                });
+                siteNameSuggestions.appendChild(div);
+            });
+
+            siteNameSuggestions.style.display = 'block';
+        }
 
         // --- 関数 ---
 
@@ -192,6 +287,9 @@
                 alert('現場名を入力してください。');
                 return;
             }
+
+            // 現場名を履歴に保存
+            saveSiteNameHistory(siteName);
 
             const workerName = workerNameSelect.value;
             if (!workerName) {
@@ -385,6 +483,24 @@
 
         // フォーム送信イベントリスナーを設定
         reportForm.addEventListener('submit', handleFormSubmit);
+
+        // 現場名オートコンプリートのイベントリスナー
+        siteNameInput.addEventListener('input', (e) => {
+            showSiteNameSuggestions(e.target.value);
+        });
+
+        siteNameInput.addEventListener('blur', () => {
+            // 少し遅延させてクリックイベントを処理
+            setTimeout(() => {
+                siteNameSuggestions.style.display = 'none';
+            }, 200);
+        });
+
+        siteNameInput.addEventListener('focus', (e) => {
+            if (e.target.value.length > 0) {
+                showSiteNameSuggestions(e.target.value);
+            }
+        });
 
         // グローバルスコープでdeleteReport関数を利用可能にする
         window.deleteReport = deleteReport;
