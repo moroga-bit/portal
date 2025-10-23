@@ -3,296 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>発注書作成システム - 株式会社諸鹿彩色</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>諸鹿彩色 社内ポータル</title>
+    <style>
+        body {
+            /* 読みやすいフォント設定 */
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <header class="header">
-            <div class="header-background">
-                <div class="floating-shapes">
-                    <div class="shape shape-1"></div>
-                    <div class="shape shape-2"></div>
-                    <div class="shape shape-3"></div>
-                    <div class="shape shape-4"></div>
-                </div>
+<body class="bg-gray-100">
+
+    <header class="bg-white shadow-md">
+        <nav class="container mx-auto px-6 py-4">
+            <h1 class="text-3xl font-bold text-gray-800">
+                諸鹿彩色 社内ポータル
+            </h1>
+            <p class="text-gray-600">現場作業の効率化と情報共有のために</p>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-8">
+        
+        <!-- 業務効率化ツール -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">業務効率化ツール</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- (変更) ツール 1: 2液塗料 混合計算 -->
+                <!-- (変更) リンク先を 'coating_jotform_mixer_calculator.html' に更新 -->
+                <a href="coating_jotform_mixer_calculator.html" class="block bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div class="p-6">
+                        <!-- (変更) アイコンの色をアクセントカラー(#e94615)に -->
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-[#e94615] text-white mb-4">
+                            <!-- 電卓アイコン (Heroicons) -->
+                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008Zm0 3h.008v.008H8.25v-.008Zm0 3h.008v.008H8.25v-.008Zm3-6h.008v.008H11.25v-.008Zm0 3h.008v.008H11.25v-.008Zm0 3h.008v.008H11.25v-.008Zm3-6h.008v.008H14.25v-.008Zm0 3h.008v.008H14.25v-.008Zm0 3h.008v.008H14.25v-.008Zm3-11.25a.75.75 0 0 1 .75.75v14.25a.75.75 0 0 1-.75.75H7.5a.75.75 0 0 1-.75-.75V7.5a.75.75 0 0 1 .75-.75h9.75Z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">2液塗料 混合計算</h3>
+                        <!-- (変更) 説明文を最新の機能に合わせる -->
+                        <p class="text-gray-600">セット重量から比率を計算し、作成したい総重量から必要な主剤・硬化剤の量を割り出します。</p>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-3">
+                        <!-- (変更) テキストの色をアクセントカラーに -->
+                        <span class="text-[#e94615] font-medium">ツールを開く &rarr;</span>
+                    </div>
+                </a>
+
+                <!-- ここに新しいツールカードを追加できます -->
+                <!-- 
+                <a href="#" class="block bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div class="p-6">
+                        ...
+                    </div>
+                </a>
+                -->
+
             </div>
-            <div class="header-content">
-                <div class="title-container">
-                    <h1 class="main-title">
-                        <span class="title-bracket">【</span>
-                        <span class="title-text">彩色発注システム</span>
-                        <span class="title-bracket">】</span>
-                    </h1>
-                    <div class="title-underline"></div>
-                </div>
-                <p class="subtitle">
-                    <span class="subtitle-icon">⚡</span>
-                    <span class="subtitle-text">簡易的な発注はこちらのシステムから作成してください</span>
-                    <span class="subtitle-icon">⚡</span>
-                </p>
-            </div>
-        </header>
+        </section>
 
-        <div class="form-container">
-            <form id="orderForm" class="order-form">
-                <!-- 会社情報セクション -->
-                <div class="form-section">
-                    <h2>発注元情報</h2>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="companyName">会社名</label>
-                            <input type="text" id="companyName" name="companyName" value="株式会社諸鹿彩色">
-                        </div>
-                        <div class="form-group">
-                            <label for="companyCode">Invoice</label>
-                            <input type="text" id="companyCode" name="companyCode" value="T6060001025935">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="companyAddress">住所</label>
-                            <input type="text" id="companyAddress" name="companyAddress" value="〒321-0111 栃木県宇都宮市川田町1048-5">
-                        </div>
-                        <div class="form-group">
-                            <label for="companyPhone">TEL/FAX</label>
-                            <input type="tel" id="companyPhone" name="companyPhone" value="TEL: 028-688-8618  FAX: 028-688-0668">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="companyEmail">Email</label>
-                            <input type="email" id="companyEmail" name="companyEmail" value="info@moroga.info">
-                        </div>
-                        <div class="form-group">
-                            <label for="orderDate">発注日</label>
-                            <input type="date" id="orderDate" name="orderDate">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="staffMember">担当</label>
-                            <select id="staffMember" name="staffMember">
-                                <option value="">担当を選択してください</option>
-                                <option value="諸鹿大介">諸鹿大介</option>
-                                <option value="奥山竜矢">奥山竜矢</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <!-- 空のスペース -->
-                        </div>
-                    </div>
-                </div>
+    </main>
 
-                <!-- 発注先情報セクション -->
-                <div class="form-section">
-                    <h2>発注先情報</h2>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="supplierName">発注先会社名</label>
-                            <input type="text" id="supplierName" name="supplierName" placeholder="発注先会社名を入力してください">
-                        </div>
-                        <div class="form-group">
-                            <label for="supplierAddress">発注先住所</label>
-                            <input type="text" id="supplierAddress" name="supplierAddress" placeholder="発注先住所を入力してください">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="contactPerson">担当者名</label>
-                            <input type="text" id="contactPerson" name="contactPerson" placeholder="担当者名を入力してください">
-                        </div>
-                        <div class="form-group">
-                            <!-- 空のスペース -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 商品情報セクション -->
-                <div class="form-section">
-                    <h2>商品情報</h2>
-                    
-                    
-                    <div id="itemsContainer">
-                        <!-- デフォルトで3行表示 -->
-                        <div class="item-row">
-                            <div class="form-group">
-                                <label>工事名</label>
-                                <input type="text" name="itemProjectName[]">
-                            </div>
-                            <div class="form-group">
-                                <label>商品名</label>
-                                <input type="text" name="itemName[]">
-                            </div>
-                            <div class="form-group">
-                                <label>数量</label>
-                                <input type="number" name="itemQuantity[]" min="1">
-                            </div>
-                            <div class="form-group">
-                                <label>単位</label>
-                                <input type="text" name="itemUnit[]" placeholder="単位を入力">
-                            </div>
-                            <div class="form-group">
-                                <label>単価（円）</label>
-                                <input type="number" name="itemPrice[]" min="0" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label>小計（円）</label>
-                                <input type="number" name="itemSubtotal[]" readonly>
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="remove-item-btn">削除</button>
-                            </div>
-                        </div>
-                        <div class="item-row">
-                            <div class="form-group">
-                                <label>工事名</label>
-                                <input type="text" name="itemProjectName[]">
-                            </div>
-                            <div class="form-group">
-                                <label>商品名</label>
-                                <input type="text" name="itemName[]">
-                            </div>
-                            <div class="form-group">
-                                <label>数量</label>
-                                <input type="number" name="itemQuantity[]" min="1">
-                            </div>
-                            <div class="form-group">
-                                <label>単位</label>
-                                <input type="text" name="itemUnit[]" placeholder="単位を入力">
-                            </div>
-                            <div class="form-group">
-                                <label>単価（円）</label>
-                                <input type="number" name="itemPrice[]" min="0" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label>小計（円）</label>
-                                <input type="number" name="itemSubtotal[]" readonly>
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="remove-item-btn">削除</button>
-                            </div>
-                        </div>
-                        <div class="item-row">
-                            <div class="form-group">
-                                <label>工事名</label>
-                                <input type="text" name="itemProjectName[]">
-                            </div>
-                            <div class="form-group">
-                                <label>商品名</label>
-                                <input type="text" name="itemName[]">
-                            </div>
-                            <div class="form-group">
-                                <label>数量</label>
-                                <input type="number" name="itemQuantity[]" min="1">
-                            </div>
-                            <div class="form-group">
-                                <label>単位</label>
-                                <input type="text" name="itemUnit[]" placeholder="単位を入力">
-                            </div>
-                            <div class="form-group">
-                                <label>単価（円）</label>
-                                <input type="number" name="itemPrice[]" min="0" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label>小計（円）</label>
-                                <input type="number" name="itemSubtotal[]" readonly>
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="remove-item-btn">削除</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 商品操作エリア -->
-                    <div class="item-controls">
-                        <div class="add-item-section">
-                            <button type="button" id="addItemBtn" class="btn-add-item">
-                                <span class="btn-icon">+</span>
-                                <span class="btn-text">商品を追加</span>
-                            </button>
-                        </div>
-                        
-                        <div class="total-summary">
-                            <div class="total-card">
-                                <div class="total-label">商品合計</div>
-                                <div class="total-amount">¥<span id="itemsTotal">0</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- その他情報セクション -->
-                <div class="form-section">
-                    <h2>その他情報</h2>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="completionMonth">工事完了月</label>
-                            <input type="month" id="completionMonth" name="completionMonth">
-                        </div>
-                        <div class="form-group">
-                            <label for="paymentTerms">支払条件</label>
-                            <select id="paymentTerms" name="paymentTerms">
-                                <option value="工事完了月の翌月末払い">工事完了月の翌月末払い</option>
-                                <option value="工事完了の翌々月末払い">工事完了の翌々月末払い</option>
-                                <option value="工事完了の翌月払い">工事完了の翌月払い</option>
-                                <option value="現金">現金</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="notes">備考</label>
-                            <textarea id="notes" name="notes" rows="3" placeholder="備考があれば入力してください"></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 合計表示 -->
-                <div class="total-section">
-                    <div class="total-row">
-                        <span>小計:</span>
-                        <span>¥<span id="subtotal">0</span></span>
-                    </div>
-                    <div class="total-row">
-                        <span>消費税 (10%):</span>
-                        <span>¥<span id="tax">0</span></span>
-                    </div>
-                    <div class="total-row total-final">
-                        <span>合計金額:</span>
-                        <span>¥<span id="total">0</span></span>
-                    </div>
-                </div>
-
-                <!-- ボタン群 -->
-                <div class="button-group">
-                    <button type="button" id="previewBtn" class="btn btn-primary">プレビュー</button>
-                    <button type="button" id="resetBtn" class="btn btn-warning">リセット</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- プレビューモーダル -->
-    <div id="previewModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>発注書プレビュー</h2>
-                <span class="close">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div id="previewContent"></div>
-            </div>
-            <div class="modal-footer">
-                <button id="generateAndEmailBtn" class="btn btn-success">PDF生成 & メール送信</button>
-                <button id="closePreviewBtn" class="btn btn-secondary">閉じる</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
 </body>
 </html>
